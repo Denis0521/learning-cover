@@ -1,5 +1,5 @@
-const VER='cover-v2';
-const CORE=['./','index.html','manifest.webmanifest',
+const VER='cover-v3';
+const CORE=['./','index.html','Manifest.js',
  'icon-192.png','icon-512.png','maskable-192.png','maskable-512.png','apple-touch-icon.png',
  'bg1-playground.jpg','bg2-outdoor.jpg','bg3-toys.jpg','bg4-space.jpg','bg5-train.jpg',
  'bg1-playground-thumb.jpg','bg2-outdoor-thumb.jpg','bg3-toys-thumb.jpg','bg4-space-thumb.jpg','bg5-train-thumb.jpg'];
@@ -27,7 +27,7 @@ self.addEventListener('fetch',e=>{
   // 頁面：網路優先（有更新就拿新版），離線用快取
   if(req.mode==='navigate'){
     e.respondWith((async()=>{
-      try{const r=await fetch(req);const c=await caches.open(VER);c.put('index.html',r.clone());return r}
+      try{const r=await fetch(req,{cache:'reload'});const c=await caches.open(VER);c.put('index.html',r.clone());return r}
       catch(_){return (await caches.match('index.html'))||(await caches.match('./'))}
     })());
     return;
