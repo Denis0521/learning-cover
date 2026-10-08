@@ -4,7 +4,7 @@
 <meta name="theme-color" content="#ffb703">
 <meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="學習封面"><meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="manifest" href="manifest.webmanifest">
+<link rel="manifest" href="Manifest.js">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <script>
@@ -80,6 +80,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:30px;heigh
 input[type=range]::-moz-range-thumb{width:30px;height:30px;border-radius:50%;background:#ffb52e;border:0;box-shadow:0 3px 0 #c76f00}
 
 /* ---- PWA dialogs ---- */
+#clearAll{position:fixed;top:calc(8px + env(safe-area-inset-top,0px));left:8px;z-index:9997;padding:7px 12px;font-size:13px;border-radius:14px;background:linear-gradient(180deg,#ff8a8a,#e5484d);box-shadow:0 3px 0 #a52a2e,0 4px 8px rgba(0,0,0,.2),inset 0 2px 0 rgba(255,255,255,.4)}
 #pwaBar{position:fixed;left:0;right:0;bottom:0;z-index:9998;display:none;padding:0 10px calc(10px + env(safe-area-inset-bottom,0px));pointer-events:none}
 #pwaBar.show{display:block;animation:up .35s ease-out}
 @keyframes up{from{transform:translateY(120%)}to{transform:none}}
@@ -110,7 +111,7 @@ input[type=range]::-moz-range-thumb{width:30px;height:30px;border-radius:50%;bac
 <div id="panel">
 <div class="tabs"><button class="on" data-t="p1">📷 相片</button><button data-t="p2">🔤 標題</button><button data-t="p3">🏫 校名</button><button data-t="p6">✏️ 填寫</button><button data-t="p4">🎨 底圖</button><button data-t="p5">📄 PDF</button></div>
 <div class="pane on" id="p1">
-<div class="btns"><button id="pickPh">選擇相片</button><button class="alt" id="clrPh">移除</button><button class="alt" id="rst">重置</button></div>
+<div class="btns"><button id="pickPh">選擇相片</button><button class="gr" id="camPh">📸 拍照</button><button class="alt" id="clrPh">移除</button><button class="alt" id="rst">重置</button></div>
 <div class="btns">縮放<input type="range" id="zoom" min="50" max="400" value="100"></div>
 <div class="btns mv"><span>移動</span><button class="gr" data-d="-1,0">◀</button><button class="gr" data-d="0,-1">▲</button><button class="gr" data-d="0,1">▼</button><button class="gr" data-d="1,0">▶</button></div></div>
 <div class="pane" id="p2"><div class="btns" id="fonts"></div></div>
@@ -119,8 +120,9 @@ input[type=range]::-moz-range-thumb{width:30px;height:30px;border-radius:50%;bac
 <div class="pane" id="p6"><div class="btns" id="fonts3"></div></div>
 <div class="pane" id="p5"><button id="pdf" style="font-size:18px;padding:14px">📄 輸出 PDF</button></div>
 </div>
-<input type="file" id="phIn" accept="image/*" hidden><input type="file" id="bgIn" accept="image/*" hidden>
+<input type="file" id="phIn" accept="image/*" hidden><input type="file" id="camIn" accept="image/*" capture="environment" hidden><input type="file" id="bgIn" accept="image/*" hidden>
 
+<button id="clearAll">🗑 清除</button>
 <div id="pwaBar"><div class="card"><img src="icon-192.png" alt=""><div class="tx"><b>安裝「學習封面」</b><span id="pwaTxt">安裝到手機桌面，下次一點就能開啟，也可離線使用。</span></div><div class="bt"><button class="no" id="pwaNo">稍後</button><button id="pwaYes">立即安裝</button></div></div></div>
 <button id="pwaFab" class="alt">📲 安裝App</button>
 <div id="lineMask"><div class="box"><div style="font-size:44px">🌐</div><h2>請用 Chrome 開啟</h2><p>LINE 內建瀏覽器無法安裝 App，<br>請改用 Chrome 瀏覽器開啟本頁。</p><div class="btns"><button id="goChrome">用 Chrome 開啟</button><button class="alt" id="cpUrl">複製網址</button></div><p style="font-size:13px;opacity:.75">也可點右上角「⋯」→「以預設瀏覽器開啟」。</p></div></div>
@@ -156,7 +158,11 @@ function reset(){if(!st.w)return;const k=Math.max(288/st.w,288/st.h);ph.style.wi
 function loadFile(f,cb){if(!f)return;const r=new FileReader();r.onload=()=>cb(r.result);r.readAsDataURL(f)}
 $('pickPh').onclick=fr.onclick=e=>{if(!st.moved)$('phIn').click()};
 $('phIn').onchange=e=>loadFile(e.target.files[0],u=>{ph.onload=()=>{st.w=ph.naturalWidth;st.h=ph.naturalHeight;ph.style.display='block';$('hint').style.display='none';reset()};ph.src=u;e.target.value=''});
-$('clrPh').onclick=e=>{e.stopPropagation();ph.style.display='none';ph.removeAttribute('src');$('hint').style.display='flex';st.w=0};
+function clearPhoto(){ph.style.display='none';ph.removeAttribute('src');$('hint').style.display='flex';st.w=0;st.x=st.y=0;st.z=1;$('zoom').value=100}
+$('clrPh').onclick=e=>{e.stopPropagation();clearPhoto()};
+$('camPh').onclick=()=>$('camIn').click();
+$('camIn').onchange=$('phIn').onchange;
+$('clearAll').onclick=()=>{if(confirm('確定要清除相片和姓名嗎？')){clearPhoto();$('f2').value=''}};
 $('rst').onclick=reset;
 $('zoom').oninput=e=>{st.z=e.target.value/100;draw()};
 document.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{const[x,y]=b.dataset.d.split(',').map(Number);st.x+=x*12;st.y+=y*12;draw()});
