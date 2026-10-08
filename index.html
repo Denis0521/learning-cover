@@ -3,7 +3,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffb703">
 <meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="學習檔案封面"><meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="學習封面"><meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -121,7 +121,7 @@ input[type=range]::-moz-range-thumb{width:30px;height:30px;border-radius:50%;bac
 </div>
 <input type="file" id="phIn" accept="image/*" hidden><input type="file" id="bgIn" accept="image/*" hidden>
 
-<div id="pwaBar"><div class="card"><img src="icon-192.png" alt=""><div class="tx"><b>安裝「學習檔案封面」</b><span id="pwaTxt">安裝到手機桌面，下次一點就能開啟，也可離線使用。</span></div><div class="bt"><button class="no" id="pwaNo">稍後</button><button id="pwaYes">立即安裝</button></div></div></div>
+<div id="pwaBar"><div class="card"><img src="icon-192.png" alt=""><div class="tx"><b>安裝「學習封面」</b><span id="pwaTxt">安裝到手機桌面，下次一點就能開啟，也可離線使用。</span></div><div class="bt"><button class="no" id="pwaNo">稍後</button><button id="pwaYes">立即安裝</button></div></div></div>
 <button id="pwaFab" class="alt">📲 安裝App</button>
 <div id="lineMask"><div class="box"><div style="font-size:44px">🌐</div><h2>請用 Chrome 開啟</h2><p>LINE 內建瀏覽器無法安裝 App，<br>請改用 Chrome 瀏覽器開啟本頁。</p><div class="btns"><button id="goChrome">用 Chrome 開啟</button><button class="alt" id="cpUrl">複製網址</button></div><p style="font-size:13px;opacity:.75">也可點右上角「⋯」→「以預設瀏覽器開啟」。</p></div></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -185,7 +185,7 @@ const old=page.style.transform;page.style.transform='none';wrap.style.overflow='
 try{await document.fonts.load(`80px ${$('title').style.fontFamily}`,'我的學習檔案');await document.fonts.load(`60px ${$('school').style.fontFamily}`,'遠東幼兒園');await document.fonts.load(`40px ${$('title').style.fontFamily}`,'我的學習檔案');await document.fonts.load(`38px ${document.querySelector('.row').style.fontFamily||'Huninn'}`,'班級姓名教師中');await document.fonts.ready;const c=await html2canvas(page,{scale:2,useCORS:true,backgroundColor:null,width:794,height:1123,windowWidth:1200,onclone:d=>{d.querySelectorAll('.row input').forEach(i=>{const t=d.createElement('div');t.textContent=i.value;const c=getComputedStyle(i);
 t.style.cssText=`font-family:${c.fontFamily};font-weight:${c.fontWeight};width:210px;height:56px;line-height:56px;font-size:38px;color:#4a2c0f;padding:0 8px;border-bottom:4px solid #4a2c0f;letter-spacing:${c.letterSpacing};white-space:pre;overflow:hidden;box-sizing:border-box`;i.replaceWith(t)})}});
 const {jsPDF}=window.jspdf;const p=new jsPDF('p','mm','a4');p.addImage(c.toDataURL('image/jpeg',.95),'JPEG',0,0,210,297);
-p.save('我的學習檔案.pdf')}catch(err){alert('輸出失敗：'+err.message)}
+const nm=($('f2').value||'').trim().replace(/[\\/:*?"<>|]/g,'');p.save(nm?'我的學習檔案_'+nm+'.pdf':'我的學習檔案.pdf')}catch(err){alert('輸出失敗：'+err.message)}
 page.style.transform=old;wrap.style.overflow='hidden';page.classList.remove('exporting');b.textContent='📄 輸出 PDF'};
 // ===== PWA =====
 if('serviceWorker' in navigator&&!window.__inLine){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}

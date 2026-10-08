@@ -1,4 +1,4 @@
-const VER='cover-v1';
+const VER='cover-v2';
 const CORE=['./','index.html','manifest.webmanifest',
  'icon-192.png','icon-512.png','maskable-192.png','maskable-512.png','apple-touch-icon.png',
  'bg1-playground.jpg','bg2-outdoor.jpg','bg3-toys.jpg','bg4-space.jpg','bg5-train.jpg',
