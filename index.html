@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="zh-Hant"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffb703">
+<meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="學習檔案封面"><meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<script>
+/* ===== LINE 內建瀏覽器 → 強制跳轉 Chrome（需在最前面執行）===== */
+(function(){
+  var ua=navigator.userAgent||'';
+  if(!/Line\//i.test(ua))return;
+  window.__inLine=true;
+  var u=new URL(location.href);
+  u.searchParams.set('openExternalBrowser','1');
+  window.__extUrl=u.href;
+  var isAndroid=/Android/i.test(ua);
+  window.__chromeUrl=isAndroid
+    ?'intent://'+u.host+u.pathname+u.search+'#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url='+encodeURIComponent(u.href)+';end'
+    :'googlechromes://'+u.host+u.pathname+u.search;
+  if(isAndroid){location.replace(window.__chromeUrl)}
+})();
+</script>
+<title>學習檔案封面設計</title>
+<link href="https://fonts.googleapis.com/css2?family=Huninn&family=Yusei+Magic&family=Hachi+Maru+Pop&family=Mochiy+Pop+One&family=Reggae+One&family=Iansui&family=Noto+Serif+TC:wght@700;900&family=Noto+Sans+TC:wght@700;900&family=LXGW+WenKai+TC&family=Dela+Gothic+One&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fff4dc;--panel:#fff;--tx:#3b2a1a;--ac:#ff7a59;--bd:#ffd9a0}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#241c14;--panel:#352a1f;--tx:#fbeedd;--bd:#5a4630}}
+:root[data-theme="dark"]{--bg:#241c14;--panel:#352a1f;--tx:#fbeedd;--bd:#5a4630}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;background:var(--bg);color:var(--tx);font-family:'Huninn','Noto Sans TC','PingFang TC',sans-serif}
+body{display:flex;flex-direction:column;overflow:hidden;padding-top:env(safe-area-inset-top,0px)}#stage{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;overflow:hidden}
+#wrap{overflow:hidden;flex:none}
+#page{width:794px;height:1123px;position:relative;transform-origin:top left;overflow:hidden;
+background:linear-gradient(180deg,#bfe9ff 0%,#fff7c2 55%,#ffd6e7 100%);box-shadow:0 6px 24px rgba(0,0,0,.25)}
+#bgimg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none}
+.deco{position:absolute;font-size:60px;opacity:.9}
+#title{position:absolute;top:44px;left:0;right:0;text-align:center;font-size:104px;line-height:1.1;white-space:nowrap}
+#title span{display:inline-block;margin:0 2px;transform:rotate(var(--r))}
+#frame{position:absolute;top:214px;left:241px;width:312px;height:312px;background:#fff;border:12px solid #fff;
+border-radius:28px;box-shadow:0 0 0 6px #ff9f1c,0 0 0 12px #ffd166,0 14px 0 6px #e07a00,0 22px 24px rgba(0,0,0,.3);overflow:hidden;cursor:grab;touch-action:none}
+#frame .inner{position:absolute;inset:0;border-radius:16px;overflow:hidden;background:#fff8e6}
+#ph{position:absolute;left:50%;top:50%;transform-origin:center;display:none;user-select:none;-webkit-user-drag:none;max-width:none}
+#hint{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;color:#c9a46a;font-size:28px;line-height:1.5}
+.exporting #hint{display:none}
+#school{position:absolute;top:556px;left:0;right:0;text-align:center;font-size:62px;letter-spacing:6px;line-height:1.2}
+.row{position:absolute;left:232px;width:330px;display:flex;align-items:flex-end;font-size:40px;color:#4a2c0f}
+.row label{white-space:nowrap}
+.row input{flex:none;width:210px;border:0;border-bottom:4px solid #4a2c0f;background:transparent;font:inherit;font-size:38px;color:#4a2c0f;outline:0;padding:0 8px;height:56px;letter-spacing:.55em;border-radius:0}
+#panel{flex:none;width:100%;max-width:794px;margin:0 auto;padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));background:var(--panel);border-top:2px solid var(--bd);border-radius:18px 18px 0 0}
+.tabs{display:flex;gap:6px;margin-bottom:8px}.tabs button{flex:1;padding:8px 0;font-size:13px;background:var(--bd);color:var(--tx);box-shadow:none}.tabs button.on{background:var(--ac);color:#fff}
+.pane{display:none;min-height:112px}.pane.on{display:grid;gap:8px;align-content:start}.btns button{padding:8px 12px}
+.btns{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+button,.btn{font:inherit;font-size:15px;border:0;border-radius:14px;padding:10px 14px;background:var(--ac);color:#fff;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,.2)}
+button.alt{background:#3a86ff}button.gr{background:#2ec4b6}
+.sw{width:40px;height:40px;padding:0;border:3px solid #fff;box-shadow:0 0 0 2px var(--bd)}
+input[type=range]{flex:1;min-width:120px}
+.mv button{padding:8px 14px;font-size:18px}
+
+/* ---- polished UI ---- */
+#panel{background:linear-gradient(180deg,var(--panel),var(--bg));border:3px solid var(--bd);border-bottom:0;border-radius:30px 30px 0 0;box-shadow:0 -8px 24px rgba(120,70,0,.18),inset 0 3px 0 rgba(255,255,255,.7)}
+button{background:linear-gradient(180deg,#ffa57d,#ff6b45);box-shadow:0 4px 0 #c24424,0 6px 10px rgba(0,0,0,.18),inset 0 2px 0 rgba(255,255,255,.5);border-radius:18px;font-weight:700;text-shadow:0 1px 0 rgba(0,0,0,.2);transition:transform .08s,box-shadow .08s}
+button:active{transform:translateY(3px);box-shadow:0 1px 0 #c24424,inset 0 2px 0 rgba(255,255,255,.4)}
+button.alt{background:linear-gradient(180deg,#7db4ff,#3a86ff);box-shadow:0 4px 0 #1f56b8,0 6px 10px rgba(0,0,0,.18),inset 0 2px 0 rgba(255,255,255,.5)}
+button.gr{background:linear-gradient(180deg,#6fe3d6,#1fb5a6);box-shadow:0 4px 0 #0f7f74,0 6px 10px rgba(0,0,0,.18),inset 0 2px 0 rgba(255,255,255,.5)}
+.tabs{background:var(--bd);padding:5px;border-radius:22px;box-shadow:inset 0 3px 6px rgba(0,0,0,.18);gap:4px}
+.tabs button{background:transparent;color:var(--tx);box-shadow:none;text-shadow:none;border-radius:17px;padding:9px 0;font-size:13px}
+.tabs button.on{background:linear-gradient(180deg,#ffd166,#ff9f1c);color:#fff;box-shadow:0 3px 0 #c76f00,0 5px 8px rgba(0,0,0,.2),inset 0 2px 0 rgba(255,255,255,.6);text-shadow:0 1px 0 rgba(0,0,0,.25)}
+.pane{background:var(--panel);border:2px solid var(--bd);border-radius:22px;padding:10px;box-shadow:inset 0 2px 5px rgba(0,0,0,.08)}
+#fonts button,#fonts2 button,#fonts3 button{background:var(--bg);color:var(--tx);border:2px solid var(--bd);box-shadow:0 3px 0 var(--bd);text-shadow:none;border-radius:16px;padding:7px 12px;font-weight:400;font-size:16px}
+#fonts button.sel,#fonts2 button.sel,#fonts3 button.sel{background:linear-gradient(180deg,#ffe29a,#ffc247);border-color:#ff9f1c;box-shadow:0 3px 0 #c76f00,inset 0 2px 0 rgba(255,255,255,.6)}
+.mv button{width:46px;height:46px;padding:0;border-radius:50%;font-size:18px}
+.sw{border-radius:50%!important;border:4px solid #fff!important;box-shadow:0 3px 0 rgba(0,0,0,.2),0 0 0 2px var(--bd)!important}
+#bgs .bgt{width:56px;height:80px;padding:0;border-radius:10px;border:3px solid #fff;background:#fff center/cover no-repeat;box-shadow:0 3px 0 rgba(0,0,0,.2),0 0 0 2px var(--bd);overflow:hidden}
+#bgs .bgt.sel{box-shadow:0 3px 0 #c76f00,0 0 0 3px #ff9f1c}
+input[type=range]{-webkit-appearance:none;appearance:none;height:16px;border-radius:10px;background:linear-gradient(180deg,#ead9bd,#fff0d2);box-shadow:inset 0 2px 4px rgba(0,0,0,.25)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:30px;height:30px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff 0,#ffd166 35%,#ff9f1c 100%);box-shadow:0 3px 0 #c76f00,0 5px 8px rgba(0,0,0,.3);border:0}
+input[type=range]::-moz-range-thumb{width:30px;height:30px;border-radius:50%;background:#ffb52e;border:0;box-shadow:0 3px 0 #c76f00}
+
+/* ---- PWA dialogs ---- */
+#pwaBar{position:fixed;left:0;right:0;bottom:0;z-index:9998;display:none;padding:0 10px calc(10px + env(safe-area-inset-bottom,0px));pointer-events:none}
+#pwaBar.show{display:block;animation:up .35s ease-out}
+@keyframes up{from{transform:translateY(120%)}to{transform:none}}
+#pwaBar .card{pointer-events:auto;max-width:520px;margin:0 auto;background:var(--panel);color:var(--tx);border:3px solid var(--bd);border-radius:26px;padding:14px;box-shadow:0 -6px 28px rgba(0,0,0,.28);display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+#pwaBar img{width:56px;height:56px;border-radius:14px;flex:none}
+#pwaBar .tx{flex:1;min-width:150px;font-size:14px;line-height:1.45}#pwaBar .tx b{display:block;font-size:17px}
+#pwaBar .bt{display:flex;gap:8px;width:100%;justify-content:flex-end}
+#pwaBar .bt button{padding:9px 16px}
+#pwaBar .bt .no{background:var(--bd);color:var(--tx);box-shadow:0 3px 0 rgba(0,0,0,.15);text-shadow:none}
+#pwaFab{position:fixed;top:calc(8px + env(safe-area-inset-top,0px));right:8px;z-index:9997;display:none;padding:7px 12px;font-size:13px}
+#lineMask{position:fixed;inset:0;z-index:99999;background:rgba(40,25,10,.88);display:none;align-items:center;justify-content:center;padding:20px;color:#fff;text-align:center}
+#lineMask .box{background:var(--panel);color:var(--tx);border-radius:28px;padding:22px 18px;max-width:380px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+#lineMask h2{margin:6px 0 8px;font-size:21px}#lineMask p{margin:6px 0;font-size:15px;line-height:1.55}
+#lineMask .btns{justify-content:center;margin-top:12px}
+</style></head><body>
+<div id="stage"><div id="wrap"><div id="page">
+<img id="bgimg" alt="">
+<div class="deco" style="top:30px;left:30px">⭐</div><div class="deco" style="top:50px;right:36px">🌈</div>
+<div id="title"></div>
+<div id="frame"><div class="inner"><img id="ph" alt=""><div id="hint">點一下<br>選擇相片</div></div></div>
+<div id="school"></div>
+<div class="row" style="top:650px"><label>班級：</label><input id="f1" maxlength="3" style="letter-spacing:.25em"></div>
+<div class="row" style="top:718px"><label>姓名：</label><input id="f2" maxlength="3"></div>
+<div class="row" style="top:786px"><label>教師：</label><input id="f3" maxlength="3"></div>
+</div></div>
+
+</div>
+<div id="panel">
+<div class="tabs"><button class="on" data-t="p1">📷 相片</button><button data-t="p2">🔤 標題</button><button data-t="p3">🏫 校名</button><button data-t="p6">✏️ 填寫</button><button data-t="p4">🎨 底圖</button><button data-t="p5">📄 PDF</button></div>
+<div class="pane on" id="p1">
+<div class="btns"><button id="pickPh">選擇相片</button><button class="alt" id="clrPh">移除</button><button class="alt" id="rst">重置</button></div>
+<div class="btns">縮放<input type="range" id="zoom" min="50" max="400" value="100"></div>
+<div class="btns mv"><span>移動</span><button class="gr" data-d="-1,0">◀</button><button class="gr" data-d="0,-1">▲</button><button class="gr" data-d="0,1">▼</button><button class="gr" data-d="1,0">▶</button></div></div>
+<div class="pane" id="p2"><div class="btns" id="fonts"></div></div>
+<div class="pane" id="p3"><div class="btns" id="fonts2"></div></div>
+<div class="pane" id="p4"><div class="btns"><button id="pickBg">插入 A4 直式圖案</button><button class="alt" id="clrBg">還原預設</button></div><div class="btns" id="sws"></div><div class="btns" id="bgs"></div></div>
+<div class="pane" id="p6"><div class="btns" id="fonts3"></div></div>
+<div class="pane" id="p5"><button id="pdf" style="font-size:18px;padding:14px">📄 輸出 PDF</button></div>
+</div>
+<input type="file" id="phIn" accept="image/*" hidden><input type="file" id="bgIn" accept="image/*" hidden>
+
+<div id="pwaBar"><div class="card"><img src="icons/icon-192.png" alt=""><div class="tx"><b>安裝「學習檔案封面」</b><span id="pwaTxt">安裝到手機桌面，下次一點就能開啟，也可離線使用。</span></div><div class="bt"><button class="no" id="pwaNo">稍後</button><button id="pwaYes">立即安裝</button></div></div></div>
+<button id="pwaFab" class="alt">📲 安裝App</button>
+<div id="lineMask"><div class="box"><div style="font-size:44px">🌐</div><h2>請用 Chrome 開啟</h2><p>LINE 內建瀏覽器無法安裝 App，<br>請改用 Chrome 瀏覽器開啟本頁。</p><div class="btns"><button id="goChrome">用 Chrome 開啟</button><button class="alt" id="cpUrl">複製網址</button></div><p style="font-size:13px;opacity:.75">也可點右上角「⋯」→「以預設瀏覽器開啟」。</p></div></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+// title
+const cols=[['#ff4d4d','#a80f1f'],['#ff9f1c','#b25e00'],['#2ec4b6','#127a70'],['#3a86ff','#1646a8'],['#9b5de5','#52209a'],['#ff4d9d','#a3195b']];
+const rot=[-6,5,-4,6,-5,4];
+[...'我的學習檔案'].forEach((c,i)=>{const s=document.createElement('span');s.textContent=c;
+const[a,d]=cols[i%6];s.style.cssText=`--r:${rot[i%6]}deg;color:${a};text-shadow:3px 3px 0 #fff,-3px -3px 0 #fff,3px -3px 0 #fff,-3px 3px 0 #fff,0 4px 0 #fff,0 -3px 0 #fff,3px 0 0 #fff,-3px 0 0 #fff,0 8px 0 ${d},0 12px 0 ${d},0 16px 0 ${d},0 22px 14px rgba(0,0,0,.28)`;$('title').appendChild(s)});
+const FONTS=[['粉圓體','Huninn'],['麥克筆','Yusei Magic'],['圓點','Hachi Maru Pop'],['糖果','Mochiy Pop One'],['粗圓','Reggae One'],['芫荽','Iansui'],['粗宋','Noto Serif TC',900],['粗黑','Noto Sans TC',900],['厚黑','Dela Gothic One'],['楷書手寫','LXGW WenKai TC']];
+function setFont(f,w=400){$('title').style.fontFamily=`'${f}','Huninn',sans-serif`;$('title').style.fontWeight=w}
+function setInput(f,w=400){document.querySelectorAll('.row').forEach(x=>{x.style.fontFamily=`'${f}','Huninn',sans-serif`;x.style.fontWeight=w>400?700:400})}
+function setSchool(f,w=400){$('school').style.fontFamily=`'${f}','Huninn',sans-serif`;$('school').style.fontWeight=w}
+FONTS.forEach(([n,f,w])=>{const b=document.createElement('button');b.className='alt';b.textContent=n;b.style.fontFamily=`'${f}','Huninn'`;b.onclick=()=>setFont(f,w);$('fonts').appendChild(b);const c=b.cloneNode(true);c.onclick=()=>setSchool(f,w);$('fonts2').appendChild(c);const d=b.cloneNode(true);d.onclick=()=>setInput(f,w);$('fonts3').appendChild(d)});
+setFont('Hachi Maru Pop');setSchool('Mochiy Pop One');
+['fonts','fonts2','fonts3'].forEach(id=>$(id).addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;$(id).querySelectorAll('button').forEach(x=>x.classList.remove('sel'));b.classList.add('sel')}));
+$('fonts').children[2].classList.add('sel');$('fonts2').children[3].classList.add('sel');$('fonts3').children[0].classList.add('sel');
+const sc2=['#ff4d4d','#ff9f1c','#2ec4b6','#3a86ff','#9b5de5'];
+[...'遠東幼兒園'].forEach((c,i)=>{const e=document.createElement('span');e.textContent=c;e.style.cssText=`color:${sc2[i%5]};text-shadow:3px 0 #fff,-3px 0 #fff,0 3px #fff,0 -3px #fff,2px 2px #fff,-2px -2px #fff,2px -2px #fff,-2px 2px #fff`;$('school').appendChild(e)});
+// fit
+const page=$('page'),wrap=$('wrap');let sc=1;
+function fit(){const g=$('stage');sc=Math.min(1,(g.clientWidth-16)/794,(g.clientHeight-16)/1123);if(sc<=0)return;wrap.style.height=1123*sc+'px';wrap.style.width=794*sc+'px';page.style.transform=`scale(${sc})`}
+new ResizeObserver(fit).observe($('stage'));
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tabs button,.pane').forEach(x=>x.classList.remove('on'));b.classList.add('on');$(b.dataset.t).classList.add('on')});
+addEventListener('resize',fit);fit();
+// photo
+const ph=$('ph'),fr=$('frame');let st={x:0,y:0,z:1,w:0,h:0};
+function draw(){ph.style.transform=`translate(calc(-50% + ${st.x}px),calc(-50% + ${st.y}px)) scale(${st.z})`}
+function reset(){if(!st.w)return;const k=Math.max(288/st.w,288/st.h);ph.style.width=st.w*k+'px';ph.style.height=st.h*k+'px';st.x=st.y=0;st.z=1;$('zoom').value=100;draw()}
+function loadFile(f,cb){if(!f)return;const r=new FileReader();r.onload=()=>cb(r.result);r.readAsDataURL(f)}
+$('pickPh').onclick=fr.onclick=e=>{if(!st.moved)$('phIn').click()};
+$('phIn').onchange=e=>loadFile(e.target.files[0],u=>{ph.onload=()=>{st.w=ph.naturalWidth;st.h=ph.naturalHeight;ph.style.display='block';$('hint').style.display='none';reset()};ph.src=u;e.target.value=''});
+$('clrPh').onclick=e=>{e.stopPropagation();ph.style.display='none';ph.removeAttribute('src');$('hint').style.display='flex';st.w=0};
+$('rst').onclick=reset;
+$('zoom').oninput=e=>{st.z=e.target.value/100;draw()};
+document.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{const[x,y]=b.dataset.d.split(',').map(Number);st.x+=x*12;st.y+=y*12;draw()});
+let drag=null,pts=new Map(),pd=0;
+fr.addEventListener('pointerdown',e=>{pts.set(e.pointerId,e);fr.setPointerCapture(e.pointerId);drag={x:e.clientX,y:e.clientY};st.moved=false;if(pts.size==2){const[a,b]=[...pts.values()];pd=Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY)}});
+fr.addEventListener('pointermove',e=>{if(!pts.has(e.pointerId)||!st.w)return;pts.set(e.pointerId,e);
+if(pts.size==2){const[a,b]=[...pts.values()];const d=Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY);st.z=Math.min(4,Math.max(.5,st.z*d/pd));pd=d;$('zoom').value=st.z*100;st.moved=true;draw();return}
+const dx=(e.clientX-drag.x)/sc,dy=(e.clientY-drag.y)/sc;if(Math.abs(dx)+Math.abs(dy)>3)st.moved=true;st.x+=dx;st.y+=dy;drag={x:e.clientX,y:e.clientY};draw()});
+const up=e=>{pts.delete(e.pointerId);setTimeout(()=>st.moved=false,50)};
+fr.addEventListener('pointerup',up);fr.addEventListener('pointercancel',up);
+fr.addEventListener('wheel',e=>{e.preventDefault();st.z=Math.min(4,Math.max(.5,st.z*(e.deltaY<0?1.06:.94)));$('zoom').value=st.z*100;draw()},{passive:false});
+// background
+const bi=$('bgimg'),decos=document.querySelectorAll('.deco');
+$('pickBg').onclick=()=>$('bgIn').click();
+function selBg(el){document.querySelectorAll('#bgs .bgt').forEach(x=>x.classList.toggle('sel',x===el))}
+$('bgIn').onchange=e=>loadFile(e.target.files[0],u=>{bi.src=u;bi.style.display='block';decos.forEach(d=>d.style.display='none');selBg(null);e.target.value=''});
+const BGS=['bg1-playground','bg2-outdoor','bg3-toys','bg4-space','bg5-train'],BGN=['遊樂場','郊遊趣','玩具屋','太空','小火車'];
+BGS.forEach((n,i)=>{const b=document.createElement('button');b.className='bgt';b.title=BGN[i];b.style.backgroundImage=`url(bg/${n}-thumb.jpg)`;
+b.onclick=()=>{bi.src=`bg/${n}.jpg`;bi.style.display='block';decos.forEach(d=>d.style.display='none');selBg(b)};$('bgs').appendChild(b)});
+function clearBg(g){selBg(null);bi.style.display='none';bi.removeAttribute('src');decos.forEach(d=>d.style.display='');page.style.background=g||''}
+$('clrBg').onclick=()=>clearBg('linear-gradient(180deg,#bfe9ff 0%,#fff7c2 55%,#ffd6e7 100%)');
+['linear-gradient(180deg,#bfe9ff,#fff7c2 55%,#ffd6e7)','linear-gradient(180deg,#ffe0f0,#ffd6a5)','linear-gradient(180deg,#d4f8d4,#fffbc7)','linear-gradient(180deg,#d6ccff,#bfe9ff)','#fff'].forEach(g=>{const b=document.createElement('button');b.className='sw';b.style.background=g;b.onclick=()=>clearBg(g);$('sws').appendChild(b)});
+// pdf
+$('pdf').onclick=async()=>{const b=$('pdf');b.textContent='輸出中…';
+const old=page.style.transform;page.style.transform='none';wrap.style.overflow='visible';page.classList.add('exporting');
+try{await document.fonts.load(`80px ${$('title').style.fontFamily}`,'我的學習檔案');await document.fonts.load(`60px ${$('school').style.fontFamily}`,'遠東幼兒園');await document.fonts.load(`40px ${$('title').style.fontFamily}`,'我的學習檔案');await document.fonts.load(`38px ${document.querySelector('.row').style.fontFamily||'Huninn'}`,'班級姓名教師中');await document.fonts.ready;const c=await html2canvas(page,{scale:2,useCORS:true,backgroundColor:null,width:794,height:1123,windowWidth:1200,onclone:d=>{d.querySelectorAll('.row input').forEach(i=>{const t=d.createElement('div');t.textContent=i.value;const c=getComputedStyle(i);
+t.style.cssText=`font-family:${c.fontFamily};font-weight:${c.fontWeight};width:210px;height:56px;line-height:56px;font-size:38px;color:#4a2c0f;padding:0 8px;border-bottom:4px solid #4a2c0f;letter-spacing:${c.letterSpacing};white-space:pre;overflow:hidden;box-sizing:border-box`;i.replaceWith(t)})}});
+const {jsPDF}=window.jspdf;const p=new jsPDF('p','mm','a4');p.addImage(c.toDataURL('image/jpeg',.95),'JPEG',0,0,210,297);
+p.save('我的學習檔案.pdf')}catch(err){alert('輸出失敗：'+err.message)}
+page.style.transform=old;wrap.style.overflow='hidden';page.classList.remove('exporting');b.textContent='📄 輸出 PDF'};
+// ===== PWA =====
+if('serviceWorker' in navigator&&!window.__inLine){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}
+(function(){
+  const ua=navigator.userAgent,isIOS=/iPhone|iPad|iPod/i.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+  const standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+  // LINE 內建瀏覽器：顯示導引
+  if(window.__inLine){
+    $('lineMask').style.display='flex';
+    $('goChrome').onclick=()=>{location.href=window.__chromeUrl};
+    $('cpUrl').onclick=async()=>{const u=location.href.replace(/[?&]openExternalBrowser=1/,'');try{await navigator.clipboard.writeText(u)}catch(e){const t=document.createElement('textarea');t.value=u;document.body.appendChild(t);t.select();document.execCommand('copy');t.remove()}$('cpUrl').textContent='已複製 ✔'};
+    return;
+  }
+  if(standalone)return;
+  const bar=$('pwaBar'),fab=$('pwaFab');let dp=null;
+  const hide=()=>{bar.classList.remove('show');if(!localStorage.getItem('pwa-installed'))fab.style.display='block'};
+  const show=()=>{fab.style.display='none';bar.classList.add('show')};
+  $('pwaNo').onclick=()=>{try{sessionStorage.setItem('pwa-skip','1')}catch(e){}hide()};
+  fab.onclick=show;
+  addEventListener('beforeinstallprompt',e=>{e.preventDefault();dp=e;$('pwaYes').textContent='立即安裝';
+    if(sessionStorage.getItem('pwa-skip'))fab.style.display='block';else show()});
+  $('pwaYes').onclick=async()=>{
+    if(dp){dp.prompt();const r=await dp.userChoice;dp=null;if(r.outcome==='accepted'){bar.classList.remove('show')}else hide()}
+    else hide()};
+  addEventListener('appinstalled',()=>{try{localStorage.setItem('pwa-installed','1')}catch(e){}bar.classList.remove('show');fab.style.display='none';dp=null});
+  // iOS 沒有安裝事件 → 顯示手動教學
+  if(isIOS){$('pwaTxt').innerHTML='點瀏覽器的「分享」按鈕 <b style="display:inline">⎋</b>，選「加入主畫面」即可安裝。';$('pwaYes').textContent='知道了';
+    setTimeout(()=>{if(sessionStorage.getItem('pwa-skip'))fab.style.display='block';else show()},1200)}
+})();
+</script></body></html>
