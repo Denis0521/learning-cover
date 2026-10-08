@@ -5,8 +5,8 @@
 <meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="學習檔案封面"><meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
-<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <script>
 /* ===== LINE 內建瀏覽器 → 強制跳轉 Chrome（需在最前面執行）===== */
 (function(){
@@ -121,7 +121,7 @@ input[type=range]::-moz-range-thumb{width:30px;height:30px;border-radius:50%;bac
 </div>
 <input type="file" id="phIn" accept="image/*" hidden><input type="file" id="bgIn" accept="image/*" hidden>
 
-<div id="pwaBar"><div class="card"><img src="icons/icon-192.png" alt=""><div class="tx"><b>安裝「學習檔案封面」</b><span id="pwaTxt">安裝到手機桌面，下次一點就能開啟，也可離線使用。</span></div><div class="bt"><button class="no" id="pwaNo">稍後</button><button id="pwaYes">立即安裝</button></div></div></div>
+<div id="pwaBar"><div class="card"><img src="icon-192.png" alt=""><div class="tx"><b>安裝「學習檔案封面」</b><span id="pwaTxt">安裝到手機桌面，下次一點就能開啟，也可離線使用。</span></div><div class="bt"><button class="no" id="pwaNo">稍後</button><button id="pwaYes">立即安裝</button></div></div></div>
 <button id="pwaFab" class="alt">📲 安裝App</button>
 <div id="lineMask"><div class="box"><div style="font-size:44px">🌐</div><h2>請用 Chrome 開啟</h2><p>LINE 內建瀏覽器無法安裝 App，<br>請改用 Chrome 瀏覽器開啟本頁。</p><div class="btns"><button id="goChrome">用 Chrome 開啟</button><button class="alt" id="cpUrl">複製網址</button></div><p style="font-size:13px;opacity:.75">也可點右上角「⋯」→「以預設瀏覽器開啟」。</p></div></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -174,8 +174,8 @@ $('pickBg').onclick=()=>$('bgIn').click();
 function selBg(el){document.querySelectorAll('#bgs .bgt').forEach(x=>x.classList.toggle('sel',x===el))}
 $('bgIn').onchange=e=>loadFile(e.target.files[0],u=>{bi.src=u;bi.style.display='block';decos.forEach(d=>d.style.display='none');selBg(null);e.target.value=''});
 const BGS=['bg1-playground','bg2-outdoor','bg3-toys','bg4-space','bg5-train'],BGN=['遊樂場','郊遊趣','玩具屋','太空','小火車'];
-BGS.forEach((n,i)=>{const b=document.createElement('button');b.className='bgt';b.title=BGN[i];b.style.backgroundImage=`url(bg/${n}-thumb.jpg)`;
-b.onclick=()=>{bi.src=`bg/${n}.jpg`;bi.style.display='block';decos.forEach(d=>d.style.display='none');selBg(b)};$('bgs').appendChild(b)});
+BGS.forEach((n,i)=>{const b=document.createElement('button');b.className='bgt';b.title=BGN[i];b.style.backgroundImage=`url(${n}-thumb.jpg)`;
+b.onclick=()=>{bi.src=`${n}.jpg`;bi.style.display='block';decos.forEach(d=>d.style.display='none');selBg(b)};$('bgs').appendChild(b)});
 function clearBg(g){selBg(null);bi.style.display='none';bi.removeAttribute('src');decos.forEach(d=>d.style.display='');page.style.background=g||''}
 $('clrBg').onclick=()=>clearBg('linear-gradient(180deg,#bfe9ff 0%,#fff7c2 55%,#ffd6e7 100%)');
 ['linear-gradient(180deg,#bfe9ff,#fff7c2 55%,#ffd6e7)','linear-gradient(180deg,#ffe0f0,#ffd6a5)','linear-gradient(180deg,#d4f8d4,#fffbc7)','linear-gradient(180deg,#d6ccff,#bfe9ff)','#fff'].forEach(g=>{const b=document.createElement('button');b.className='sw';b.style.background=g;b.onclick=()=>clearBg(g);$('sws').appendChild(b)});

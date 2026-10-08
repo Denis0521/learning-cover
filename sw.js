@@ -1,8 +1,8 @@
 const VER='cover-v1';
 const CORE=['./','index.html','manifest.webmanifest',
- 'icons/icon-192.png','icons/icon-512.png','icons/maskable-192.png','icons/maskable-512.png','icons/apple-touch-icon.png',
- 'bg/bg1-playground.jpg','bg/bg2-outdoor.jpg','bg/bg3-toys.jpg','bg/bg4-space.jpg','bg/bg5-train.jpg',
- 'bg/bg1-playground-thumb.jpg','bg/bg2-outdoor-thumb.jpg','bg/bg3-toys-thumb.jpg','bg/bg4-space-thumb.jpg','bg/bg5-train-thumb.jpg'];
+ 'icon-192.png','icon-512.png','maskable-192.png','maskable-512.png','apple-touch-icon.png',
+ 'bg1-playground.jpg','bg2-outdoor.jpg','bg3-toys.jpg','bg4-space.jpg','bg5-train.jpg',
+ 'bg1-playground-thumb.jpg','bg2-outdoor-thumb.jpg','bg3-toys-thumb.jpg','bg4-space-thumb.jpg','bg5-train-thumb.jpg'];
 const LIBS=['https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js',
  'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'];
 
