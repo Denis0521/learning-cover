@@ -46,9 +46,9 @@ border-radius:28px;box-shadow:0 0 0 6px #ff9f1c,0 0 0 12px #ffd166,0 14px 0 6px 
 #hint{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;color:#c9a46a;font-size:28px;line-height:1.5}
 .exporting #hint{display:none}
 #school{position:absolute;top:556px;left:0;right:0;text-align:center;font-size:62px;letter-spacing:6px;line-height:1.2}
-.row{position:absolute;left:232px;width:330px;display:flex;align-items:flex-end;font-size:40px;color:#4a2c0f}
+.row{position:absolute;left:232px;width:330px;display:flex;align-items:flex-end;font-size:40px;color:var(--fc,#4a2c0f)}
 .row label{white-space:nowrap}
-.row input{flex:none;width:210px;border:0;border-bottom:4px solid #4a2c0f;background:transparent;font:inherit;font-size:38px;color:#4a2c0f;outline:0;padding:0 8px;height:56px;letter-spacing:.55em;border-radius:0}
+.row input{flex:none;width:210px;border:0;border-bottom:4px solid var(--fc,#4a2c0f);background:transparent;font:inherit;font-size:38px;color:var(--fc,#4a2c0f);outline:0;padding:0 8px;height:56px;letter-spacing:.55em;border-radius:0}
 #panel{flex:none;width:100%;max-width:794px;margin:0 auto;padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));background:var(--panel);border-top:2px solid var(--bd);border-radius:18px 18px 0 0}
 .tabs{display:flex;gap:6px;margin-bottom:8px}.tabs button{flex:1;padding:8px 0;font-size:13px;background:var(--bd);color:var(--tx);box-shadow:none}.tabs button.on{background:var(--ac);color:#fff}
 .pane{display:none;min-height:112px}.pane.on{display:grid;gap:8px;align-content:start}.btns button{padding:8px 12px}
@@ -95,6 +95,7 @@ input[type=range]::-moz-range-thumb{width:30px;height:30px;border-radius:50%;bac
 #lineMask .box{background:var(--panel);color:var(--tx);border-radius:28px;padding:22px 18px;max-width:380px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,.5)}
 #lineMask h2{margin:6px 0 8px;font-size:21px}#lineMask p{margin:6px 0;font-size:15px;line-height:1.55}
 #lineMask .btns{justify-content:center;margin-top:12px}
+.sw.sel{box-shadow:0 0 0 3px #ff9f1c}
 </style></head><body>
 <div id="stage"><div id="wrap"><div id="page">
 <img id="bgimg" alt="">
@@ -117,7 +118,7 @@ input[type=range]::-moz-range-thumb{width:30px;height:30px;border-radius:50%;bac
 <div class="pane" id="p2"><div class="btns" id="fonts"></div></div>
 <div class="pane" id="p3"><div class="btns" id="fonts2"></div></div>
 <div class="pane" id="p4"><div class="btns"><button id="pickBg">插入 A4 直式圖案</button><button class="alt" id="clrBg">還原預設</button></div><div class="btns" id="sws"></div><div class="btns" id="bgs"></div></div>
-<div class="pane" id="p6"><div class="btns" id="fonts3"></div></div>
+<div class="pane" id="p6"><div class="btns" id="fonts3"></div><div class="btns"><span>字色</span><span id="fcs" class="btns"></span></div></div>
 <div class="pane" id="p5"><button id="pdf" style="font-size:18px;padding:14px">📄 輸出 PDF</button></div>
 </div>
 <input type="file" id="phIn" accept="image/*" hidden><input type="file" id="camIn" accept="image/*" capture="environment" hidden><input type="file" id="bgIn" accept="image/*" hidden>
@@ -145,6 +146,8 @@ setFont('Hachi Maru Pop');setSchool('Mochiy Pop One');
 $('fonts').children[2].classList.add('sel');$('fonts2').children[3].classList.add('sel');$('fonts3').children[0].classList.add('sel');
 const sc2=['#ff4d4d','#ff9f1c','#2ec4b6','#3a86ff','#9b5de5'];
 [...'遠東幼兒園'].forEach((c,i)=>{const e=document.createElement('span');e.textContent=c;e.style.cssText=`color:${sc2[i%5]};text-shadow:3px 0 #fff,-3px 0 #fff,0 3px #fff,0 -3px #fff,2px 2px #fff,-2px -2px #fff,2px -2px #fff,-2px 2px #fff`;$('school').appendChild(e)});
+const FC=[['深灰','#3a3a3a'],['深藍','#12306b'],['深紫','#4a2182'],['深綠','#145a32'],['深棕','#4a2c0f']];
+FC.forEach(([n,c],i)=>{const b=document.createElement('button');b.className='sw';b.title=n;b.style.background=c;b.onclick=()=>{document.querySelectorAll('.row').forEach(r=>r.style.setProperty('--fc',c));$('fcs').querySelectorAll('button').forEach(x=>x.classList.toggle('sel',x===b))};$('fcs').appendChild(b);if(i==4)b.classList.add('sel')});
 // fit
 const page=$('page'),wrap=$('wrap');let sc=1;
 function fit(){const g=$('stage');sc=Math.min(1,(g.clientWidth-16)/794,(g.clientHeight-16)/1123);if(sc<=0)return;wrap.style.height=1123*sc+'px';wrap.style.width=794*sc+'px';page.style.transform=`scale(${sc})`}
@@ -189,7 +192,7 @@ $('clrBg').onclick=()=>clearBg('linear-gradient(180deg,#bfe9ff 0%,#fff7c2 55%,#f
 $('pdf').onclick=async()=>{const b=$('pdf');b.textContent='輸出中…';
 const old=page.style.transform;page.style.transform='none';wrap.style.overflow='visible';page.classList.add('exporting');
 try{await document.fonts.load(`80px ${$('title').style.fontFamily}`,'我的學習檔案');await document.fonts.load(`60px ${$('school').style.fontFamily}`,'遠東幼兒園');await document.fonts.load(`40px ${$('title').style.fontFamily}`,'我的學習檔案');await document.fonts.load(`38px ${document.querySelector('.row').style.fontFamily||'Huninn'}`,'班級姓名教師中');await document.fonts.ready;const c=await html2canvas(page,{scale:2,useCORS:true,backgroundColor:null,width:794,height:1123,windowWidth:1200,onclone:d=>{d.querySelectorAll('.row input').forEach(i=>{const t=d.createElement('div');t.textContent=i.value;const c=getComputedStyle(i);
-t.style.cssText=`font-family:${c.fontFamily};font-weight:${c.fontWeight};width:210px;height:56px;line-height:56px;font-size:38px;color:#4a2c0f;padding:0 8px;border-bottom:4px solid #4a2c0f;letter-spacing:${c.letterSpacing};white-space:pre;overflow:hidden;box-sizing:border-box`;i.replaceWith(t)})}});
+t.style.cssText=`font-family:${c.fontFamily};font-weight:${c.fontWeight};width:210px;height:56px;line-height:56px;font-size:38px;color:${c.color};padding:0 8px;border-bottom:4px solid ${c.color};letter-spacing:${c.letterSpacing};white-space:pre;overflow:hidden;box-sizing:border-box`;i.replaceWith(t)})}});
 const {jsPDF}=window.jspdf;const p=new jsPDF('p','mm','a4');p.addImage(c.toDataURL('image/jpeg',.95),'JPEG',0,0,210,297);
 const nm=($('f2').value||'').trim().replace(/[\\/:*?"<>|]/g,'');p.save(nm?'我的學習檔案_'+nm+'.pdf':'我的學習檔案.pdf')}catch(err){alert('輸出失敗：'+err.message)}
 page.style.transform=old;wrap.style.overflow='hidden';page.classList.remove('exporting');b.textContent='📄 輸出 PDF'};
