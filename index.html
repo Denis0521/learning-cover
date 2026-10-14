@@ -46,51 +46,23 @@ border-radius:28px;box-shadow:0 0 0 6px #ff9f1c,0 0 0 12px #ffd166,0 14px 0 6px 
 #hint{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;color:#c9a46a;font-size:28px;line-height:1.5}
 .exporting #hint{display:none}
 #school{position:absolute;top:556px;left:0;right:0;text-align:center;font-size:62px;letter-spacing:6px;line-height:1.2}
-
-/* 修改為立體玻璃珠與下凹輸入框樣式 */
-.row {
-  position: absolute;
-  left: 190px;
-  width: 400px;
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  font-size: 36px;
-  color: var(--fc, #4a2c0f);
-}
-.row label {
-  white-space: nowrap;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 24px;
-  height: 64px;
-  border-radius: 32px;
-  background-color: var(--fc, #4a2c0f);
-  background-image: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 40%, rgba(0,0,0,0) 60%, rgba(0,0,0,0.4) 100%);
-  color: #fff;
-  font-size: 32px;
-  text-shadow: 0 2px 3px rgba(0,0,0,0.8);
-  box-shadow: inset 0 6px 8px rgba(255,255,255,0.6), inset 0 -6px 8px rgba(0,0,0,0.5), 0 6px 12px rgba(0,0,0,0.4);
-}
-.row input {
-  flex: none;
-  width: 140px;
-  height: 64px;
-  padding: 0;
-  border: none;
-  border-radius: 16px;
-  background: rgba(230, 215, 200, 0.4);
-  box-shadow: inset 0 5px 10px rgba(0,0,0,0.35), inset 0 2px 4px rgba(0,0,0,0.2), inset 0 -2px 4px rgba(255,255,255,0.7), 0 2px 4px rgba(255,255,255,0.6);
-  font: inherit;
-  font-size: 38px;
-  color: var(--fc, #4a2c0f);
-  text-align: center;
-  letter-spacing: 0.1em;
-  outline: 0;
-  text-shadow: -1px -1px 1px rgba(255,255,255,0.9), 2px 2px 3px rgba(0,0,0,0.5);
-}
-
+.row{position:absolute;left:0;right:0;height:64px;display:flex;align-items:center;justify-content:center;gap:22px;font-size:38px;color:var(--fc,#4a2c0f)}
+/* 彩虹糖果標題 */
+.row label{position:relative;flex:none;min-width:150px;height:64px;border-radius:999px;text-align:center;white-space:nowrap;color:#fff;letter-spacing:.2em;text-indent:.2em;
+background:repeating-linear-gradient(-45deg,rgba(255,255,255,.26) 0 10px,rgba(255,255,255,0) 10px 20px),linear-gradient(135deg,#ff5d73 0%,#ff9f43 20%,#ffd93d 40%,#4cd964 60%,#3ab0ff 80%,#a56bff 100%);
+box-shadow:0 8px 0 #7a3b9e,0 14px 16px rgba(0,0,0,.3),inset 0 4px 0 rgba(255,255,255,.6),inset 0 -5px 8px rgba(0,0,0,.2)}
+.row label::before{content:"";position:absolute;left:18px;right:18px;top:6px;height:34%;border-radius:999px;background:linear-gradient(180deg,rgba(255,255,255,.8),rgba(255,255,255,0))}
+.row label span{position:relative;display:block;line-height:60px;
+text-shadow:-2px -2px 0 #5b2a86,2px -2px 0 #5b2a86,-2px 2px 0 #5b2a86,2px 2px 0 #5b2a86,0 -2px 0 #5b2a86,0 2px 0 #5b2a86,-2px 0 0 #5b2a86,2px 0 0 #5b2a86,0 5px 0 #5b2a86,0 8px 6px rgba(0,0,0,.35)}
+/* 彩色輸入框（無底線） */
+.row .fld{flex:none;width:226px;padding:6px;border-radius:26px;background:linear-gradient(135deg,var(--c1),var(--c2));
+box-shadow:0 8px 0 var(--c3),0 14px 16px rgba(0,0,0,.28),inset 0 3px 0 rgba(255,255,255,.55)}
+.row input{display:block;width:100%;height:52px;border:0;outline:0;margin:0;padding:0 8px;border-radius:20px;background:linear-gradient(180deg,#fff,#fff6e0);
+box-shadow:inset 0 4px 8px rgba(0,0,0,.2);font:inherit;font-size:38px;color:var(--fc,#4a2c0f);letter-spacing:.55em;text-indent:.55em;text-align:center;
+text-shadow:0 2px 0 #fff,0 6px 3px rgba(0,0,0,.28),0 12px 8px rgba(0,0,0,.2);animation:floaty 2.6s ease-in-out infinite}
+@keyframes floaty{0%,100%{text-shadow:0 2px 0 #fff,0 5px 3px rgba(0,0,0,.28),0 9px 6px rgba(0,0,0,.2)}50%{text-shadow:0 3px 0 #fff,0 9px 4px rgba(0,0,0,.24),0 16px 10px rgba(0,0,0,.16)}}
+.exporting .row input{animation:none}
+#wrap{margin:auto}
 #panel{flex:none;width:100%;max-width:794px;margin:0 auto;padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));background:var(--panel);border-top:2px solid var(--bd);border-radius:18px 18px 0 0}
 .tabs{display:flex;gap:6px;margin-bottom:8px}.tabs button{flex:1;padding:8px 0;font-size:13px;background:var(--bd);color:var(--tx);box-shadow:none}.tabs button.on{background:var(--ac);color:#fff}
 .pane{display:none;min-height:112px}.pane.on{display:grid;gap:8px;align-content:start}.btns button{padding:8px 12px}
@@ -145,12 +117,9 @@ input[type=range]::-moz-range-thumb{width:30px;height:30px;border-radius:50%;bac
 <div id="title"></div>
 <div id="frame"><div class="inner"><img id="ph" alt=""><div id="hint">點一下<br>選擇相片</div></div></div>
 <div id="school"></div>
-
-<!-- 改為立體圓形玻璃珠與下凹輸入框，移除冒號與舊版行內樣式 -->
-<div class="row" style="top:650px"><label>班級</label><input id="f1" maxlength="3"></div>
-<div class="row" style="top:718px"><label>姓名</label><input id="f2" maxlength="3"></div>
-<div class="row" style="top:786px"><label>教師</label><input id="f3" maxlength="3"></div>
-
+<div class="row" style="top:650px;--c1:#ff7a59;--c2:#ffb347;--c3:#c24424"><label><span>班級</span></label><div class="fld"><input id="f1" maxlength="3" style="letter-spacing:.25em;text-indent:.25em"></div></div>
+<div class="row" style="top:738px;--c1:#3a86ff;--c2:#2ec4b6;--c3:#1f56b8"><label><span>姓名</span></label><div class="fld"><input id="f2" maxlength="3"></div></div>
+<div class="row" style="top:826px;--c1:#9b5de5;--c2:#ff4d9d;--c3:#52209a"><label><span>教師</span></label><div class="fld"><input id="f3" maxlength="3"></div></div>
 </div></div>
 
 </div>
@@ -236,10 +205,8 @@ $('clrBg').onclick=()=>clearBg('linear-gradient(180deg,#bfe9ff 0%,#fff7c2 55%,#f
 // pdf
 $('pdf').onclick=async()=>{const b=$('pdf');b.textContent='輸出中…';
 const old=page.style.transform;page.style.transform='none';wrap.style.overflow='visible';page.classList.add('exporting');
-try{await document.fonts.load(`80px ${$('title').style.fontFamily}`,'我的學習檔案');await document.fonts.load(`60px ${$('school').style.fontFamily}`,'遠東幼兒園');await document.fonts.load(`40px ${$('title').style.fontFamily}`,'我的學習檔案');await document.fonts.load(`38px ${document.querySelector('.row').style.fontFamily||'Huninn'}`,'班級姓名教師中');await document.fonts.ready;
-/* PDF 輸出時抓取並繼承新的立體樣式 */
-const c=await html2canvas(page,{scale:2,useCORS:true,backgroundColor:null,width:794,height:1123,windowWidth:1200,onclone:d=>{d.querySelectorAll('.row input').forEach(i=>{const t=d.createElement('div');t.textContent=i.value;const c=getComputedStyle(i);
-t.style.cssText=`font-family:${c.fontFamily};font-weight:${c.fontWeight};width:${c.width};height:${c.height};line-height:${c.height};font-size:${c.fontSize};color:${c.color};padding:${c.padding};border-radius:${c.borderRadius};background:${c.backgroundColor};box-shadow:${c.boxShadow};text-shadow:${c.textShadow};text-align:${c.textAlign};letter-spacing:${c.letterSpacing};white-space:pre;overflow:hidden;box-sizing:border-box;display:flex;align-items:center;justify-content:center`;i.replaceWith(t)})}});
+try{await document.fonts.load(`80px ${$('title').style.fontFamily}`,'我的學習檔案');await document.fonts.load(`60px ${$('school').style.fontFamily}`,'遠東幼兒園');await document.fonts.load(`40px ${$('title').style.fontFamily}`,'我的學習檔案');await document.fonts.load(`38px ${document.querySelector('.row').style.fontFamily||'Huninn'}`,'班級姓名教師中');await document.fonts.ready;const c=await html2canvas(page,{scale:2,useCORS:true,backgroundColor:null,width:794,height:1123,windowWidth:1200,onclone:d=>{d.querySelectorAll('.row input').forEach(i=>{const t=d.createElement('div');t.textContent=i.value;const c=getComputedStyle(i);
+t.style.cssText=`font-family:${c.fontFamily};font-weight:${c.fontWeight};width:100%;height:52px;line-height:52px;font-size:38px;color:${c.color};padding:0 8px;border-radius:20px;background-image:${c.backgroundImage};background-color:#fff;box-shadow:${c.boxShadow};text-shadow:${c.textShadow};text-align:center;text-indent:${c.textIndent};letter-spacing:${c.letterSpacing};white-space:pre;overflow:hidden;box-sizing:border-box`;i.replaceWith(t)})}});
 const {jsPDF}=window.jspdf;const p=new jsPDF('p','mm','a4');p.addImage(c.toDataURL('image/jpeg',.95),'JPEG',0,0,210,297);
 const nm=($('f2').value||'').trim().replace(/[\\/:*?"<>|]/g,'');p.save(nm?'我的學習檔案_'+nm+'.pdf':'我的學習檔案.pdf')}catch(err){alert('輸出失敗：'+err.message)}
 page.style.transform=old;wrap.style.overflow='hidden';page.classList.remove('exporting');b.textContent='📄 輸出 PDF'};
