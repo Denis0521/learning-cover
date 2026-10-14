@@ -202,11 +202,60 @@ b.onclick=()=>{bi.src=`${n}.jpg`;bi.style.display='block';decos.forEach(d=>d.sty
 function clearBg(g){selBg(null);bi.style.display='none';bi.removeAttribute('src');decos.forEach(d=>d.style.display='');page.style.background=g||''}
 $('clrBg').onclick=()=>clearBg('linear-gradient(180deg,#bfe9ff 0%,#fff7c2 55%,#ffd6e7 100%)');
 ['linear-gradient(180deg,#bfe9ff,#fff7c2 55%,#ffd6e7)','linear-gradient(180deg,#ffe0f0,#ffd6a5)','linear-gradient(180deg,#d4f8d4,#fffbc7)','linear-gradient(180deg,#d6ccff,#bfe9ff)','#fff'].forEach(g=>{const b=document.createElement('button');b.className='sw';b.style.background=g;b.onclick=()=>clearBg(g);$('sws').appendChild(b)});
+
+// ===== 輸出 PDF 專用：用 Canvas 手繪糖果標題＋彩色輸入框 =====
+function drawRowImg(row){
+  const S=3,CW=438,CH=110,ox=20,oy=23;
+  const cv=document.createElement('canvas');cv.width=CW*S;cv.height=CH*S;
+  const x=cv.getContext('2d');x.scale(S,S);
+  const cs=getComputedStyle(row),inp=row.querySelector('input'),ics=getComputedStyle(inp);
+  const c1=cs.getPropertyValue('--c1').trim(),c2=cs.getPropertyValue('--c2').trim(),c3=cs.getPropertyValue('--c3').trim();
+  const fam=cs.fontFamily,wt=cs.fontWeight,fc=ics.color;
+  const rr=(a,b,w,h,r)=>{x.beginPath();x.moveTo(a+r,b);x.arcTo(a+w,b,a+w,b+h,r);x.arcTo(a+w,b+h,a,b+h,r);x.arcTo(a,b+h,a,b,r);x.arcTo(a,b,a+w,b,r);x.closePath()};
+  const sh=(c,oyy,bl)=>{x.shadowColor=c;x.shadowOffsetY=oyy*S;x.shadowBlur=bl*S;x.shadowOffsetX=0};
+  const noSh=()=>{x.shadowColor='transparent';x.shadowBlur=0;x.shadowOffsetY=0};
+  x.font=`${wt} 38px ${fam}`;x.textBaseline='middle';x.textAlign='left';x.lineJoin='round';
+  const place=(str,ls,startX,y,fn)=>{let cx=startX;for(const ch of str){fn(ch,cx,y);cx+=x.measureText(ch).width+ls}};
+  const advW=(str,ls)=>[...str].reduce((a,ch)=>a+x.measureText(ch).width+ls,0);
+  /* ---- 彩虹糖果標題 ---- */
+  const lw=150,lh=64;
+  rr(ox,oy+8,lw,lh,32);sh('rgba(0,0,0,.3)',6,16);x.fillStyle='#7a3b9e';x.fill();noSh();
+  x.save();rr(ox,oy,lw,lh,32);x.clip();
+  let g=x.createLinearGradient(ox,oy,ox+lw,oy+lh);
+  [[0,'#ff5d73'],[.2,'#ff9f43'],[.4,'#ffd93d'],[.6,'#4cd964'],[.8,'#3ab0ff'],[1,'#a56bff']].forEach(a=>g.addColorStop(a[0],a[1]));
+  x.fillStyle=g;x.fillRect(ox,oy,lw,lh);
+  x.strokeStyle='rgba(255,255,255,.26)';x.lineWidth=10;
+  for(let k=-lh;k<lw+lh;k+=20){x.beginPath();x.moveTo(ox+k,oy+lh);x.lineTo(ox+k+lh,oy);x.stroke()}
+  g=x.createLinearGradient(0,oy,0,oy+8);g.addColorStop(0,'rgba(255,255,255,.65)');g.addColorStop(1,'rgba(255,255,255,0)');x.fillStyle=g;x.fillRect(ox,oy,lw,8);
+  g=x.createLinearGradient(0,oy+lh,0,oy+lh-12);g.addColorStop(0,'rgba(0,0,0,.25)');g.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=g;x.fillRect(ox,oy+lh-12,lw,12);
+  g=x.createLinearGradient(0,oy+6,0,oy+6+lh*.34);g.addColorStop(0,'rgba(255,255,255,.8)');g.addColorStop(1,'rgba(255,255,255,0)');x.fillStyle=g;rr(ox+18,oy+6,lw-36,lh*.34,14);x.fill();
+  x.restore();
+  const lab=row.querySelector('label').textContent,lls=7.6,lt=advW(lab,lls)-lls,lx=ox+(lw-lt)/2,ly=oy+31;
+  x.strokeStyle='#5b2a86';x.lineWidth=9;
+  place(lab,lls,lx,ly+5,(ch,cx,cy)=>{x.fillStyle='#5b2a86';sh('rgba(0,0,0,.35)',4,6);x.strokeText(ch,cx,cy);x.fillText(ch,cx,cy);noSh()});
+  place(lab,lls,lx,ly,(ch,cx,cy)=>{x.lineWidth=7;x.strokeStyle='#5b2a86';x.strokeText(ch,cx,cy);x.fillStyle='#fff';x.fillText(ch,cx,cy)});
+  /* ---- 彩色輸入框 ---- */
+  const fx=ox+lw+22,fw=226,fh=64;
+  rr(fx,oy+8,fw,fh,26);sh('rgba(0,0,0,.28)',6,16);x.fillStyle=c3;x.fill();noSh();
+  g=x.createLinearGradient(fx,oy,fx+fw,oy+fh);g.addColorStop(0,c1);g.addColorStop(1,c2);rr(fx,oy,fw,fh,26);x.fillStyle=g;x.fill();
+  x.save();rr(fx,oy,fw,fh,26);x.clip();g=x.createLinearGradient(0,oy,0,oy+6);g.addColorStop(0,'rgba(255,255,255,.55)');g.addColorStop(1,'rgba(255,255,255,0)');x.fillStyle=g;x.fillRect(fx,oy,fw,6);x.restore();
+  const ix=fx+6,iy=oy+6,iw=fw-12,ih=52;
+  g=x.createLinearGradient(0,iy,0,iy+ih);g.addColorStop(0,'#fff');g.addColorStop(1,'#fff6e0');rr(ix,iy,iw,ih,20);x.fillStyle=g;x.fill();
+  x.save();rr(ix,iy,iw,ih,20);x.clip();g=x.createLinearGradient(0,iy,0,iy+12);g.addColorStop(0,'rgba(0,0,0,.2)');g.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=g;x.fillRect(ix,iy,iw,12);x.restore();
+  const val=inp.value;
+  if(val){
+    const ls=parseFloat(ics.letterSpacing)||0,ind=parseFloat(ics.textIndent)||0;
+    const lineW=ind+advW(val,ls),sx=ix+8+((iw-16)-lineW)/2+ind,ty=iy+ih/2+1;
+    x.fillStyle=fc;
+    [['#fff',2,0],['rgba(0,0,0,.2)',12,8],['rgba(0,0,0,.28)',6,3]].forEach(a=>place(val,ls,sx,ty,(ch,cx,cy)=>{sh(a[0],a[1],a[2]);x.fillText(ch,cx,cy);noSh()}));
+    place(val,ls,sx,ty,(ch,cx,cy)=>x.fillText(ch,cx,cy));
+  }
+  return cv.toDataURL('image/png');
+}
 // pdf
 $('pdf').onclick=async()=>{const b=$('pdf');b.textContent='輸出中…';
 const old=page.style.transform;page.style.transform='none';wrap.style.overflow='visible';page.classList.add('exporting');
-try{await document.fonts.load(`80px ${$('title').style.fontFamily}`,'我的學習檔案');await document.fonts.load(`60px ${$('school').style.fontFamily}`,'遠東幼兒園');await document.fonts.load(`40px ${$('title').style.fontFamily}`,'我的學習檔案');await document.fonts.load(`38px ${document.querySelector('.row').style.fontFamily||'Huninn'}`,'班級姓名教師中');await document.fonts.ready;const c=await html2canvas(page,{scale:2,useCORS:true,backgroundColor:null,width:794,height:1123,windowWidth:1200,onclone:d=>{d.querySelectorAll('.row input').forEach(i=>{const t=d.createElement('div');t.textContent=i.value;const c=getComputedStyle(i);
-t.style.cssText=`font-family:${c.fontFamily};font-weight:${c.fontWeight};width:100%;height:52px;line-height:52px;font-size:38px;color:${c.color};padding:0 8px;border-radius:20px;background-image:${c.backgroundImage};background-color:#fff;box-shadow:${c.boxShadow};text-shadow:${c.textShadow};text-align:center;text-indent:${c.textIndent};letter-spacing:${c.letterSpacing};white-space:pre;overflow:hidden;box-sizing:border-box`;i.replaceWith(t)})}});
+try{await document.fonts.load(`80px ${$('title').style.fontFamily}`,'我的學習檔案');await document.fonts.load(`60px ${$('school').style.fontFamily}`,'遠東幼兒園');await document.fonts.load(`40px ${$('title').style.fontFamily}`,'我的學習檔案');await document.fonts.load(`38px ${document.querySelector('.row').style.fontFamily||'Huninn'}`,'班級姓名教師中');await document.fonts.ready;const c=await html2canvas(page,{scale:2,useCORS:true,backgroundColor:null,width:794,height:1123,windowWidth:1200,onclone:d=>{const live=document.querySelectorAll('.row'),imgs=[...live].map(drawRowImg);d.querySelectorAll('.row').forEach((r,k)=>{r.innerHTML='';const im=d.createElement('img');im.src=imgs[k];im.style.cssText='display:block;flex:none;width:438px;height:110px';r.appendChild(im)})}});
 const {jsPDF}=window.jspdf;const p=new jsPDF('p','mm','a4');p.addImage(c.toDataURL('image/jpeg',.95),'JPEG',0,0,210,297);
 const nm=($('f2').value||'').trim().replace(/[\\/:*?"<>|]/g,'');p.save(nm?'我的學習檔案_'+nm+'.pdf':'我的學習檔案.pdf')}catch(err){alert('輸出失敗：'+err.message)}
 page.style.transform=old;wrap.style.overflow='hidden';page.classList.remove('exporting');b.textContent='📄 輸出 PDF'};
