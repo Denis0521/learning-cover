@@ -47,18 +47,21 @@ border-radius:28px;box-shadow:0 0 0 6px #ff9f1c,0 0 0 12px #ffd166,0 14px 0 6px 
 .exporting #hint{display:none}
 #school{position:absolute;top:556px;left:0;right:0;text-align:center;font-size:62px;letter-spacing:6px;line-height:1.2}
 .row{position:absolute;left:0;right:0;height:64px;display:flex;align-items:center;justify-content:center;gap:22px;font-size:38px;color:var(--fc,#4a2c0f)}
-/* 彩虹糖果標題 */
+/* 透明紫水晶標題 */
 .row label{position:relative;flex:none;min-width:150px;height:64px;border-radius:999px;text-align:center;white-space:nowrap;color:#fff;letter-spacing:.2em;text-indent:.2em;
-background:repeating-linear-gradient(-45deg,rgba(255,255,255,.26) 0 10px,rgba(255,255,255,0) 10px 20px),linear-gradient(135deg,#ff5d73 0%,#ff9f43 20%,#ffd93d 40%,#4cd964 60%,#3ab0ff 80%,#a56bff 100%);
-box-shadow:0 8px 0 #7a3b9e,0 14px 16px rgba(0,0,0,.3),inset 0 4px 0 rgba(255,255,255,.6),inset 0 -5px 8px rgba(0,0,0,.2)}
+background:linear-gradient(115deg,rgba(255,255,255,0) 22%,rgba(255,255,255,.42) 30%,rgba(255,255,255,0) 38%,rgba(255,255,255,0) 58%,rgba(255,255,255,.26) 64%,rgba(255,255,255,0) 70%),linear-gradient(135deg,rgba(216,180,255,.82),rgba(155,93,229,.7) 50%,rgba(98,45,170,.82));
+-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);
+box-shadow:0 8px 14px rgba(98,45,170,.45),inset 0 0 0 2px rgba(255,255,255,.55),inset 0 4px 0 rgba(255,255,255,.65),inset 0 -7px 10px rgba(80,30,150,.45)}
 .row label::before{content:"";position:absolute;left:18px;right:18px;top:6px;height:34%;border-radius:999px;background:linear-gradient(180deg,rgba(255,255,255,.8),rgba(255,255,255,0))}
 .row label span{position:relative;display:block;line-height:60px;
-text-shadow:-2px -2px 0 #5b2a86,2px -2px 0 #5b2a86,-2px 2px 0 #5b2a86,2px 2px 0 #5b2a86,0 -2px 0 #5b2a86,0 2px 0 #5b2a86,-2px 0 0 #5b2a86,2px 0 0 #5b2a86,0 5px 0 #5b2a86,0 8px 6px rgba(0,0,0,.35)}
-/* 彩色輸入框（無底線） */
-.row .fld{flex:none;width:226px;padding:6px;border-radius:26px;background:linear-gradient(135deg,var(--c1),var(--c2));
-box-shadow:0 8px 0 var(--c3),0 14px 16px rgba(0,0,0,.28),inset 0 3px 0 rgba(255,255,255,.55)}
-.row input{display:block;width:100%;height:52px;border:0;outline:0;margin:0;padding:0 8px;border-radius:20px;background:linear-gradient(180deg,#fff,#fff6e0);
-box-shadow:inset 0 4px 8px rgba(0,0,0,.2);font:inherit;font-size:38px;color:var(--fc,#4a2c0f);letter-spacing:.55em;text-indent:.55em;text-align:center;
+text-shadow:-2px -2px 0 #4a1d86,2px -2px 0 #4a1d86,-2px 2px 0 #4a1d86,2px 2px 0 #4a1d86,0 -2px 0 #4a1d86,0 2px 0 #4a1d86,-2px 0 0 #4a1d86,2px 0 0 #4a1d86,0 5px 0 #4a1d86,0 8px 6px rgba(60,20,120,.4)}
+/* 透明白水晶輸入框（無底線） */
+.row .fld{flex:none;width:226px;padding:6px;border-radius:26px;
+background:linear-gradient(115deg,rgba(255,255,255,0) 20%,rgba(255,255,255,.5) 28%,rgba(255,255,255,0) 36%),linear-gradient(135deg,rgba(255,255,255,.78),rgba(255,255,255,.28) 50%,rgba(215,235,255,.65));
+-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);
+box-shadow:0 0 0 2px rgba(160,190,230,.55),0 8px 14px rgba(120,150,190,.4),inset 0 0 0 2px rgba(255,255,255,.9),inset 0 5px 0 rgba(255,255,255,.9)}
+.row input{display:block;width:100%;height:52px;border:0;outline:0;margin:0;padding:0 8px;border-radius:20px;background:linear-gradient(180deg,rgba(255,255,255,.55),rgba(255,255,255,.2));
+box-shadow:inset 0 0 0 1px rgba(255,255,255,.8),inset 0 4px 9px rgba(120,150,190,.38);font:inherit;font-size:38px;color:var(--fc,#4a2c0f);letter-spacing:.55em;text-indent:.55em;text-align:center;
 text-shadow:0 2px 0 #fff,0 6px 3px rgba(0,0,0,.28),0 12px 8px rgba(0,0,0,.2);animation:floaty 2.6s ease-in-out infinite}
 @keyframes floaty{0%,100%{text-shadow:0 2px 0 #fff,0 5px 3px rgba(0,0,0,.28),0 9px 6px rgba(0,0,0,.2)}50%{text-shadow:0 3px 0 #fff,0 9px 4px rgba(0,0,0,.24),0 16px 10px rgba(0,0,0,.16)}}
 .exporting .row input{animation:none}
@@ -117,9 +120,9 @@ input[type=range]::-moz-range-thumb{width:30px;height:30px;border-radius:50%;bac
 <div id="title"></div>
 <div id="frame"><div class="inner"><img id="ph" alt=""><div id="hint">點一下<br>選擇相片</div></div></div>
 <div id="school"></div>
-<div class="row" style="top:650px;--c1:#ff7a59;--c2:#ffb347;--c3:#c24424"><label><span>班級</span></label><div class="fld"><input id="f1" maxlength="3" style="letter-spacing:.25em;text-indent:.25em"></div></div>
-<div class="row" style="top:738px;--c1:#3a86ff;--c2:#2ec4b6;--c3:#1f56b8"><label><span>姓名</span></label><div class="fld"><input id="f2" maxlength="3"></div></div>
-<div class="row" style="top:826px;--c1:#9b5de5;--c2:#ff4d9d;--c3:#52209a"><label><span>教師</span></label><div class="fld"><input id="f3" maxlength="3"></div></div>
+<div class="row" style="top:650px"><label><span>班級</span></label><div class="fld"><input id="f1" maxlength="3" style="letter-spacing:.25em;text-indent:.25em"></div></div>
+<div class="row" style="top:738px"><label><span>姓名</span></label><div class="fld"><input id="f2" maxlength="3"></div></div>
+<div class="row" style="top:826px"><label><span>教師</span></label><div class="fld"><input id="f3" maxlength="3"></div></div>
 </div></div>
 
 </div>
@@ -209,39 +212,48 @@ function drawRowImg(row){
   const cv=document.createElement('canvas');cv.width=CW*S;cv.height=CH*S;
   const x=cv.getContext('2d');x.scale(S,S);
   const cs=getComputedStyle(row),inp=row.querySelector('input'),ics=getComputedStyle(inp);
-  const c1=cs.getPropertyValue('--c1').trim(),c2=cs.getPropertyValue('--c2').trim(),c3=cs.getPropertyValue('--c3').trim();
   const fam=cs.fontFamily,wt=cs.fontWeight,fc=ics.color;
-  const rr=(a,b,w,h,r)=>{x.beginPath();x.moveTo(a+r,b);x.arcTo(a+w,b,a+w,b+h,r);x.arcTo(a+w,b+h,a,b+h,r);x.arcTo(a,b+h,a,b,r);x.arcTo(a,b,a+w,b,r);x.closePath()};
+  const rr=(a,b,w,h,r,k)=>{if(!k)x.beginPath();x.moveTo(a+r,b);x.arcTo(a+w,b,a+w,b+h,r);x.arcTo(a+w,b+h,a,b+h,r);x.arcTo(a,b+h,a,b,r);x.arcTo(a,b,a+w,b,r);x.closePath()};
   const sh=(c,oyy,bl)=>{x.shadowColor=c;x.shadowOffsetY=oyy*S;x.shadowBlur=bl*S;x.shadowOffsetX=0};
   const noSh=()=>{x.shadowColor='transparent';x.shadowBlur=0;x.shadowOffsetY=0};
+  /* 只畫在形狀外側（模擬 CSS 外陰影，透明水晶內部不會被陰影填滿） */
+  const outside=(a,b,w,h,r,fn)=>{x.save();x.beginPath();x.rect(0,0,CW,CH);rr(a,b,w,h,r,true);x.clip('evenodd');fn();x.restore()};
+  const lin=(x0,y0,x1,y1,stops)=>{const g=x.createLinearGradient(x0,y0,x1,y1);stops.forEach(t=>g.addColorStop(t[0],t[1]));return g};
   x.font=`${wt} 38px ${fam}`;x.textBaseline='middle';x.textAlign='left';x.lineJoin='round';
   const place=(str,ls,startX,y,fn)=>{let cx=startX;for(const ch of str){fn(ch,cx,y);cx+=x.measureText(ch).width+ls}};
   const advW=(str,ls)=>[...str].reduce((a,ch)=>a+x.measureText(ch).width+ls,0);
-  /* ---- 彩虹糖果標題 ---- */
+  /* ---- 透明紫水晶標題 ---- */
   const lw=150,lh=64;
-  rr(ox,oy+8,lw,lh,32);sh('rgba(0,0,0,.3)',6,16);x.fillStyle='#7a3b9e';x.fill();noSh();
+  outside(ox,oy,lw,lh,32,()=>{rr(ox,oy+8,lw,lh,32);sh('rgba(98,45,170,.45)',6,14);x.fillStyle='rgba(98,45,170,.5)';x.fill();noSh()});
   x.save();rr(ox,oy,lw,lh,32);x.clip();
-  let g=x.createLinearGradient(ox,oy,ox+lw,oy+lh);
-  [[0,'#ff5d73'],[.2,'#ff9f43'],[.4,'#ffd93d'],[.6,'#4cd964'],[.8,'#3ab0ff'],[1,'#a56bff']].forEach(a=>g.addColorStop(a[0],a[1]));
-  x.fillStyle=g;x.fillRect(ox,oy,lw,lh);
-  x.strokeStyle='rgba(255,255,255,.26)';x.lineWidth=10;
-  for(let k=-lh;k<lw+lh;k+=20){x.beginPath();x.moveTo(ox+k,oy+lh);x.lineTo(ox+k+lh,oy);x.stroke()}
-  g=x.createLinearGradient(0,oy,0,oy+8);g.addColorStop(0,'rgba(255,255,255,.65)');g.addColorStop(1,'rgba(255,255,255,0)');x.fillStyle=g;x.fillRect(ox,oy,lw,8);
-  g=x.createLinearGradient(0,oy+lh,0,oy+lh-12);g.addColorStop(0,'rgba(0,0,0,.25)');g.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=g;x.fillRect(ox,oy+lh-12,lw,12);
-  g=x.createLinearGradient(0,oy+6,0,oy+6+lh*.34);g.addColorStop(0,'rgba(255,255,255,.8)');g.addColorStop(1,'rgba(255,255,255,0)');x.fillStyle=g;rr(ox+18,oy+6,lw-36,lh*.34,14);x.fill();
+  x.fillStyle=lin(ox,oy,ox+lw,oy+lh,[[0,'rgba(216,180,255,.82)'],[.5,'rgba(155,93,229,.7)'],[1,'rgba(98,45,170,.82)']]);x.fillRect(ox,oy,lw,lh);
+  x.lineCap='butt';
+  x.strokeStyle='rgba(255,255,255,.4)';x.lineWidth=9;x.beginPath();x.moveTo(ox+36,oy+lh);x.lineTo(ox+36+lh*.55,oy);x.stroke();
+  x.strokeStyle='rgba(255,255,255,.26)';x.lineWidth=6;x.beginPath();x.moveTo(ox+92,oy+lh);x.lineTo(ox+92+lh*.55,oy);x.stroke();
+  x.fillStyle=lin(0,oy,0,oy+8,[[0,'rgba(255,255,255,.65)'],[1,'rgba(255,255,255,0)']]);x.fillRect(ox,oy,lw,8);
+  x.fillStyle=lin(0,oy+lh,0,oy+lh-14,[[0,'rgba(80,30,150,.45)'],[1,'rgba(80,30,150,0)']]);x.fillRect(ox,oy+lh-14,lw,14);
+  x.fillStyle=lin(0,oy+6,0,oy+6+lh*.34,[[0,'rgba(255,255,255,.8)'],[1,'rgba(255,255,255,0)']]);rr(ox+18,oy+6,lw-36,lh*.34,14);x.fill();
   x.restore();
+  rr(ox+1,oy+1,lw-2,lh-2,31);x.strokeStyle='rgba(255,255,255,.55)';x.lineWidth=2;x.stroke();
   const lab=row.querySelector('label').textContent,lls=7.6,lt=advW(lab,lls)-lls,lx=ox+(lw-lt)/2,ly=oy+31;
-  x.strokeStyle='#5b2a86';x.lineWidth=9;
-  place(lab,lls,lx,ly+5,(ch,cx,cy)=>{x.fillStyle='#5b2a86';sh('rgba(0,0,0,.35)',4,6);x.strokeText(ch,cx,cy);x.fillText(ch,cx,cy);noSh()});
-  place(lab,lls,lx,ly,(ch,cx,cy)=>{x.lineWidth=7;x.strokeStyle='#5b2a86';x.strokeText(ch,cx,cy);x.fillStyle='#fff';x.fillText(ch,cx,cy)});
-  /* ---- 彩色輸入框 ---- */
+  place(lab,lls,lx,ly+5,(ch,cx,cy)=>{x.lineWidth=9;x.strokeStyle='#4a1d86';x.fillStyle='#4a1d86';sh('rgba(60,20,120,.4)',4,6);x.strokeText(ch,cx,cy);x.fillText(ch,cx,cy);noSh()});
+  place(lab,lls,lx,ly,(ch,cx,cy)=>{x.lineWidth=7;x.strokeStyle='#4a1d86';x.strokeText(ch,cx,cy);x.fillStyle='#fff';x.fillText(ch,cx,cy)});
+  /* ---- 透明白水晶輸入框 ---- */
   const fx=ox+lw+22,fw=226,fh=64;
-  rr(fx,oy+8,fw,fh,26);sh('rgba(0,0,0,.28)',6,16);x.fillStyle=c3;x.fill();noSh();
-  g=x.createLinearGradient(fx,oy,fx+fw,oy+fh);g.addColorStop(0,c1);g.addColorStop(1,c2);rr(fx,oy,fw,fh,26);x.fillStyle=g;x.fill();
-  x.save();rr(fx,oy,fw,fh,26);x.clip();g=x.createLinearGradient(0,oy,0,oy+6);g.addColorStop(0,'rgba(255,255,255,.55)');g.addColorStop(1,'rgba(255,255,255,0)');x.fillStyle=g;x.fillRect(fx,oy,fw,6);x.restore();
+  outside(fx-2,oy-2,fw+4,fh+4,28,()=>{rr(fx,oy+8,fw,fh,26);sh('rgba(120,150,190,.4)',6,14);x.fillStyle='rgba(150,180,215,.45)';x.fill();noSh()});
+  rr(fx-1,oy-1,fw+2,fh+2,27);x.strokeStyle='rgba(160,190,230,.55)';x.lineWidth=2;x.stroke();
+  x.save();rr(fx,oy,fw,fh,26);x.clip();
+  x.fillStyle=lin(fx,oy,fx+fw,oy+fh,[[0,'rgba(255,255,255,.78)'],[.5,'rgba(255,255,255,.28)'],[1,'rgba(215,235,255,.65)']]);x.fillRect(fx,oy,fw,fh);
+  x.strokeStyle='rgba(255,255,255,.5)';x.lineWidth=9;x.lineCap='butt';x.beginPath();x.moveTo(fx+34,oy+fh);x.lineTo(fx+34+fh*.55,oy);x.stroke();
+  x.fillStyle=lin(0,oy,0,oy+6,[[0,'rgba(255,255,255,.95)'],[1,'rgba(255,255,255,0)']]);x.fillRect(fx,oy,fw,6);
+  x.restore();
+  rr(fx+1,oy+1,fw-2,fh-2,25);x.strokeStyle='rgba(255,255,255,.9)';x.lineWidth=2;x.stroke();
   const ix=fx+6,iy=oy+6,iw=fw-12,ih=52;
-  g=x.createLinearGradient(0,iy,0,iy+ih);g.addColorStop(0,'#fff');g.addColorStop(1,'#fff6e0');rr(ix,iy,iw,ih,20);x.fillStyle=g;x.fill();
-  x.save();rr(ix,iy,iw,ih,20);x.clip();g=x.createLinearGradient(0,iy,0,iy+12);g.addColorStop(0,'rgba(0,0,0,.2)');g.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=g;x.fillRect(ix,iy,iw,12);x.restore();
+  x.save();rr(ix,iy,iw,ih,20);x.clip();
+  x.fillStyle=lin(0,iy,0,iy+ih,[[0,'rgba(255,255,255,.55)'],[1,'rgba(255,255,255,.2)']]);x.fillRect(ix,iy,iw,ih);
+  x.fillStyle=lin(0,iy,0,iy+13,[[0,'rgba(120,150,190,.38)'],[1,'rgba(120,150,190,0)']]);x.fillRect(ix,iy,iw,13);
+  x.restore();
+  rr(ix+.5,iy+.5,iw-1,ih-1,19.5);x.strokeStyle='rgba(255,255,255,.8)';x.lineWidth=1;x.stroke();
   const val=inp.value;
   if(val){
     const ls=parseFloat(ics.letterSpacing)||0,ind=parseFloat(ics.textIndent)||0;
