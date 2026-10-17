@@ -46,9 +46,7 @@ border-radius:28px;box-shadow:0 0 0 6px #ff9f1c,0 0 0 12px #ffd166,0 14px 0 6px 
 #ph{position:absolute;left:50%;top:50%;transform-origin:center;display:none;user-select:none;-webkit-user-drag:none;max-width:none}
 #hint{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;color:#c9a46a;font-size:28px;line-height:1.5}
 .exporting #hint{display:none}
-#school span{display:inline-block;--o:3px 0 #fff,-3px 0 #fff,0 3px #fff,0 -3px #fff,2px 2px #fff,-2px -2px #fff,2px -2px #fff,-2px 2px #fff;text-shadow:var(--o),0 8px 5px rgba(0,0,0,.28);animation:sfloat 2.6s ease-in-out infinite;animation-delay:var(--d,0s)}
-@keyframes sfloat{0%,100%{transform:translateY(0);text-shadow:var(--o),0 6px 4px rgba(0,0,0,.3)}50%{transform:translateY(-9px);text-shadow:var(--o),0 17px 9px rgba(0,0,0,.17)}}
-.exporting #school span{animation:none;transform:translateY(-4px);text-shadow:var(--o),0 12px 7px rgba(0,0,0,.22)}
+#school span{display:inline-block;--o:3px 0 #fff,-3px 0 #fff,0 3px #fff,0 -3px #fff,2px 2px #fff,-2px -2px #fff,2px -2px #fff,-2px 2px #fff;transform:translateY(-4px);text-shadow:var(--o),0 12px 7px rgba(0,0,0,.22)}
 #school{position:absolute;top:556px;left:0;right:0;text-align:center;font-size:62px;letter-spacing:6px;line-height:1.2}
 .row{position:absolute;left:0;right:0;height:64px;display:flex;align-items:center;justify-content:center;gap:22px;font-size:38px;color:var(--fc,#4a2c0f)}
 /* 標題：純文字 */
@@ -61,9 +59,7 @@ background:linear-gradient(115deg,rgba(255,255,255,0) 20%,rgba(255,255,255,.5) 2
 box-shadow:0 0 0 2px rgba(160,190,230,.55),0 8px 14px rgba(120,150,190,.4),inset 0 0 0 2px rgba(255,255,255,.9),inset 0 5px 0 rgba(255,255,255,.9)}
 .row input{display:block;width:100%;height:52px;border:0;outline:0;margin:0;padding:0 8px;border-radius:20px;background:linear-gradient(180deg,rgba(255,255,255,.55),rgba(255,255,255,.2));
 box-shadow:inset 0 0 0 1px rgba(255,255,255,.8),inset 0 4px 9px rgba(120,150,190,.38);font:inherit;font-size:38px;color:var(--fc,#4a2c0f);letter-spacing:.55em;text-indent:.55em;text-align:center;
-text-shadow:0 2px 0 #fff,0 6px 3px rgba(0,0,0,.28),0 12px 8px rgba(0,0,0,.2);animation:floaty 2.6s ease-in-out infinite}
-@keyframes floaty{0%,100%{text-shadow:0 2px 0 #fff,0 5px 3px rgba(0,0,0,.28),0 9px 6px rgba(0,0,0,.2)}50%{text-shadow:0 3px 0 #fff,0 9px 4px rgba(0,0,0,.24),0 16px 10px rgba(0,0,0,.16)}}
-.exporting .row input{animation:none}
+text-shadow:0 2px 0 #fff,0 6px 3px rgba(0,0,0,.28),0 12px 8px rgba(0,0,0,.2)}
 #wrap{margin:auto}
 #panel{flex:none;width:100%;max-width:794px;margin:0 auto;padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));background:var(--panel);border-top:2px solid var(--bd);border-radius:18px 18px 0 0}
 .tabs{display:flex;gap:6px;margin-bottom:8px}.tabs button{flex:1;padding:8px 0;font-size:13px;background:var(--bd);color:var(--tx);box-shadow:none}.tabs button.on{background:var(--ac);color:#fff}
@@ -222,7 +218,7 @@ $('clrBg').onclick=()=>clearBg('linear-gradient(180deg,#bfe9ff 0%,#fff7c2 55%,#f
 
 // ===== 輸出 PDF 專用：用 Canvas 手繪糖果標題＋彩色輸入框 =====
 function drawRowImg(row){
-  const S=3,CW=438,CH=110,ox=45,oy=23;
+  const S=2,CW=438,CH=110,ox=45,oy=23;
   const cv=document.createElement('canvas');cv.width=CW*S;cv.height=CH*S;
   const x=cv.getContext('2d');x.scale(S,S);
   const cs=getComputedStyle(row),inp=row.querySelector('input'),ics=getComputedStyle(inp);
