@@ -41,6 +41,7 @@ background:linear-gradient(180deg,#bfe9ff 0%,#fff7c2 55%,#ffd6e7 100%);box-shado
 #title span{display:inline-block;margin:0 2px;transform:rotate(var(--r))}
 #frame{position:absolute;top:214px;left:241px;width:312px;height:312px;background:#fff;border:12px solid #fff;
 border-radius:28px;box-shadow:0 0 0 6px #ff9f1c,0 0 0 12px #ffd166,0 14px 0 6px #e07a00,0 22px 24px rgba(0,0,0,.3);overflow:hidden;cursor:grab;touch-action:none}
+#frame.wide{left:129px;width:536px}
 #frame .inner{position:absolute;inset:0;border-radius:16px;overflow:hidden;background:#fff8e6}
 #ph{position:absolute;left:50%;top:50%;transform-origin:center;display:none;user-select:none;-webkit-user-drag:none;max-width:none}
 #hint{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;color:#c9a46a;font-size:28px;line-height:1.5}
@@ -108,6 +109,10 @@ input[type=range]::-moz-range-thumb{width:30px;height:30px;border-radius:50%;bac
 #lineMask h2{margin:6px 0 8px;font-size:21px}#lineMask p{margin:6px 0;font-size:15px;line-height:1.55}
 #lineMask .btns{justify-content:center;margin-top:12px}
 .sw.sel{box-shadow:0 0 0 3px #ff9f1c}
+.txt{flex:1;min-width:0;font:inherit;font-size:16px;padding:8px 12px;border:2px solid var(--bd);border-radius:14px;background:var(--bg);color:var(--tx);outline:0}
+.txt:focus{border-color:#ff9f1c}
+#fshape button{background:var(--bg);color:var(--tx);border:2px solid var(--bd);box-shadow:0 3px 0 var(--bd);text-shadow:none;font-weight:400;padding:7px 14px;font-size:15px}
+#fshape button.sel{background:linear-gradient(180deg,#ffe29a,#ffc247);border-color:#ff9f1c;box-shadow:0 3px 0 #c76f00,inset 0 2px 0 rgba(255,255,255,.6)}
 </style></head><body>
 <div id="stage"><div id="wrap"><div id="page">
 <img id="bgimg" alt="">
@@ -125,10 +130,11 @@ input[type=range]::-moz-range-thumb{width:30px;height:30px;border-radius:50%;bac
 <div class="tabs"><button class="on" data-t="p1">📷 相片</button><button data-t="p2">🔤 標題</button><button data-t="p3">🏫 校名</button><button data-t="p6">✏️ 填寫</button><button data-t="p4">🎨 底圖</button><button data-t="p5">📄 PDF</button></div>
 <div class="pane on" id="p1">
 <div class="btns"><button id="pickPh">選擇相片</button><button class="gr" id="camPh">📸 拍照</button><button class="alt" id="clrPh">移除</button><button class="alt" id="rst">重置</button></div>
+<div class="btns" id="fshape"><span>相框</span><button class="sel" data-s="sq">⬜ 方形</button><button data-s="wide">▭ 16:9 寬版</button></div>
 <div class="btns">縮放<input type="range" id="zoom" min="50" max="400" value="100"></div>
 <div class="btns mv"><span>移動</span><button class="gr" data-d="-1,0">◀</button><button class="gr" data-d="0,-1">▲</button><button class="gr" data-d="0,1">▼</button><button class="gr" data-d="1,0">▶</button></div></div>
-<div class="pane" id="p2"><div class="btns" id="fonts"></div></div>
-<div class="pane" id="p3"><div class="btns" id="fonts2"></div></div>
+<div class="pane" id="p2"><div class="btns"><span>文字</span><input class="txt" id="tTxt" maxlength="12" value="我的學習檔案" placeholder="輸入標題"></div><div class="btns" id="fonts"></div></div>
+<div class="pane" id="p3"><div class="btns"><span>文字</span><input class="txt" id="sTxt" maxlength="14" value="遠東幼兒園" placeholder="輸入副標題（校名）"></div><div class="btns" id="fonts2"></div></div>
 <div class="pane" id="p4"><div class="btns"><button id="pickBg">插入 A4 直式圖案</button><button class="alt" id="clrBg">還原預設</button></div><div class="btns" id="sws"></div><div class="btns" id="bgs"></div></div>
 <div class="pane" id="p6"><div class="btns" id="fonts3"></div><div class="btns"><span>字色</span><span id="fcs" class="btns"></span></div></div>
 <div class="pane" id="p5"><button id="pdf" style="font-size:18px;padding:14px">📄 輸出 PDF</button></div>
@@ -146,18 +152,24 @@ const $=id=>document.getElementById(id);
 // title
 const cols=[['#ff4d4d','#a80f1f'],['#ff9f1c','#b25e00'],['#2ec4b6','#127a70'],['#3a86ff','#1646a8'],['#9b5de5','#52209a'],['#ff4d9d','#a3195b']];
 const rot=[-6,5,-4,6,-5,4];
-[...'我的學習檔案'].forEach((c,i)=>{const s=document.createElement('span');s.textContent=c;
-const[a,d]=cols[i%6];s.style.cssText=`--r:${rot[i%6]}deg;color:${a};text-shadow:3px 3px 0 #fff,-3px -3px 0 #fff,3px -3px 0 #fff,-3px 3px 0 #fff,0 4px 0 #fff,0 -3px 0 #fff,3px 0 0 #fff,-3px 0 0 #fff,0 8px 0 ${d},0 12px 0 ${d},0 16px 0 ${d},0 22px 14px rgba(0,0,0,.28)`;$('title').appendChild(s)});
+/* 文字過長時自動縮小字級，避免超出頁面 */
+function fitTxt(el,base){el.style.fontSize=base+'px';const max=734;if(el.scrollWidth>max)el.style.fontSize=Math.max(24,Math.floor(base*max/el.scrollWidth))+'px'}
+function renderTitle(t){const el=$('title');el.innerHTML='';[...t].forEach((c,i)=>{const s=document.createElement('span');s.textContent=c===' '?'\u00A0':c;
+const[a,d]=cols[i%6];s.style.cssText=`--r:${rot[i%6]}deg;color:${a};text-shadow:3px 3px 0 #fff,-3px -3px 0 #fff,3px -3px 0 #fff,-3px 3px 0 #fff,0 4px 0 #fff,0 -3px 0 #fff,3px 0 0 #fff,-3px 0 0 #fff,0 8px 0 ${d},0 12px 0 ${d},0 16px 0 ${d},0 22px 14px rgba(0,0,0,.28)`;el.appendChild(s)});fitTxt(el,104)}
 const FONTS=[['粉圓體','Huninn'],['麥克筆','Yusei Magic'],['圓點','Hachi Maru Pop'],['糖果','Mochiy Pop One'],['粗圓','Reggae One'],['芫荽','Iansui'],['粗宋','Noto Serif TC',900],['粗黑','Noto Sans TC',900],['厚黑','Dela Gothic One'],['楷書手寫','LXGW WenKai TC']];
-function setFont(f,w=400){$('title').style.fontFamily=`'${f}','Huninn',sans-serif`;$('title').style.fontWeight=w}
+function setFont(f,w=400){$('title').style.fontFamily=`'${f}','Huninn',sans-serif`;$('title').style.fontWeight=w;fitTxt($('title'),104)}
 function setInput(f,w=400){document.querySelectorAll('.row').forEach(x=>{x.style.fontFamily=`'${f}','Huninn',sans-serif`;x.style.fontWeight=w>400?700:400})}
-function setSchool(f,w=400){$('school').style.fontFamily=`'${f}','Huninn',sans-serif`;$('school').style.fontWeight=w}
+function setSchool(f,w=400){$('school').style.fontFamily=`'${f}','Huninn',sans-serif`;$('school').style.fontWeight=w;fitTxt($('school'),62)}
 FONTS.forEach(([n,f,w])=>{const b=document.createElement('button');b.className='alt';b.textContent=n;b.style.fontFamily=`'${f}','Huninn'`;b.onclick=()=>setFont(f,w);$('fonts').appendChild(b);const c=b.cloneNode(true);c.onclick=()=>setSchool(f,w);$('fonts2').appendChild(c);const d=b.cloneNode(true);d.onclick=()=>setInput(f,w);$('fonts3').appendChild(d)});
 setFont('Hachi Maru Pop');setSchool('Mochiy Pop One');
 ['fonts','fonts2','fonts3'].forEach(id=>$(id).addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;$(id).querySelectorAll('button').forEach(x=>x.classList.remove('sel'));b.classList.add('sel')}));
 $('fonts').children[2].classList.add('sel');$('fonts2').children[3].classList.add('sel');$('fonts3').children[0].classList.add('sel');
 const sc2=['#ff4d4d','#ff9f1c','#2ec4b6','#3a86ff','#9b5de5'];
-[...'遠東幼兒園'].forEach((c,i)=>{const e=document.createElement('span');e.textContent=c;e.style.cssText=`color:${sc2[i%5]};text-shadow:3px 0 #fff,-3px 0 #fff,0 3px #fff,0 -3px #fff,2px 2px #fff,-2px -2px #fff,2px -2px #fff,-2px 2px #fff`;$('school').appendChild(e)});
+function renderSchool(t){const el=$('school');el.innerHTML='';[...t].forEach((c,i)=>{const e=document.createElement('span');e.textContent=c===' '?'\u00A0':c;e.style.cssText=`color:${sc2[i%5]};text-shadow:3px 0 #fff,-3px 0 #fff,0 3px #fff,0 -3px #fff,2px 2px #fff,-2px -2px #fff,2px -2px #fff,-2px 2px #fff`;el.appendChild(e)});fitTxt(el,62)}
+renderTitle($('tTxt').value);renderSchool($('sTxt').value);
+$('tTxt').addEventListener('input',e=>renderTitle(e.target.value));
+$('sTxt').addEventListener('input',e=>renderSchool(e.target.value));
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{fitTxt($('title'),104);fitTxt($('school'),62)});
 const FC=[['深灰','#3a3a3a'],['深藍','#12306b'],['深紫','#4a2182'],['深綠','#145a32'],['深棕','#4a2c0f']];
 FC.forEach(([n,c],i)=>{const b=document.createElement('button');b.className='sw';b.title=n;b.style.background=c;b.onclick=()=>{document.querySelectorAll('.row').forEach(r=>r.style.setProperty('--fc',c));$('fcs').querySelectorAll('button').forEach(x=>x.classList.toggle('sel',x===b))};$('fcs').appendChild(b);if(i==4)b.classList.add('sel')});
 // fit
@@ -169,7 +181,11 @@ addEventListener('resize',fit);fit();
 // photo
 const ph=$('ph'),fr=$('frame');let st={x:0,y:0,z:1,w:0,h:0};
 function draw(){ph.style.transform=`translate(calc(-50% + ${st.x}px),calc(-50% + ${st.y}px)) scale(${st.z})`}
-function reset(){if(!st.w)return;const k=Math.max(288/st.w,288/st.h);ph.style.width=st.w*k+'px';ph.style.height=st.h*k+'px';st.x=st.y=0;st.z=1;$('zoom').value=100;draw()}
+let FW=288;const FH=288;/* 相框內框尺寸：方形 288×288；16:9 為 512×288 */
+function sizePh(){if(!st.w)return;const k=Math.max(FW/st.w,FH/st.h);ph.style.width=st.w*k+'px';ph.style.height=st.h*k+'px'}
+function reset(){if(!st.w)return;sizePh();st.x=st.y=0;st.z=1;$('zoom').value=100;draw()}
+document.querySelectorAll('#fshape button').forEach(b=>b.onclick=e=>{e.stopPropagation();const w=b.dataset.s==='wide';fr.classList.toggle('wide',w);FW=w?512:288;
+document.querySelectorAll('#fshape button').forEach(x=>x.classList.toggle('sel',x===b));sizePh();draw()});
 function loadFile(f,cb){if(!f)return;const r=new FileReader();r.onload=()=>cb(r.result);r.readAsDataURL(f)}
 $('pickPh').onclick=fr.onclick=e=>{if(!st.moved)$('phIn').click()};
 $('phIn').onchange=e=>loadFile(e.target.files[0],u=>{ph.onload=()=>{st.w=ph.naturalWidth;st.h=ph.naturalHeight;ph.style.display='block';$('hint').style.display='none';reset()};ph.src=u;e.target.value=''});
@@ -253,7 +269,7 @@ function drawRowImg(row){
 // pdf
 $('pdf').onclick=async()=>{const b=$('pdf');b.textContent='輸出中…';
 const old=page.style.transform;page.style.transform='none';wrap.style.overflow='visible';page.classList.add('exporting');
-try{await document.fonts.load(`80px ${$('title').style.fontFamily}`,'我的學習檔案');await document.fonts.load(`60px ${$('school').style.fontFamily}`,'遠東幼兒園');await document.fonts.load(`40px ${$('title').style.fontFamily}`,'我的學習檔案');await document.fonts.load(`38px ${document.querySelector('.row').style.fontFamily||'Huninn'}`,'班級姓名教師中');await document.fonts.ready;const c=await html2canvas(page,{scale:2,useCORS:true,backgroundColor:null,width:794,height:1123,windowWidth:1200,onclone:d=>{const live=document.querySelectorAll('.row'),imgs=[...live].map(drawRowImg);d.querySelectorAll('.row').forEach((r,k)=>{r.innerHTML='';const im=d.createElement('img');im.src=imgs[k];im.style.cssText='display:block;flex:none;width:438px;height:110px';r.appendChild(im)})}});
+try{const TT=$('tTxt').value||'字',SS=$('sTxt').value||'字';await document.fonts.load(`80px ${$('title').style.fontFamily}`,TT);await document.fonts.load(`60px ${$('school').style.fontFamily}`,SS);await document.fonts.load(`40px ${$('title').style.fontFamily}`,'我的學習檔案');await document.fonts.load(`38px ${document.querySelector('.row').style.fontFamily||'Huninn'}`,'班級姓名教師中');await document.fonts.ready;const c=await html2canvas(page,{scale:2,useCORS:true,backgroundColor:null,width:794,height:1123,windowWidth:1200,onclone:d=>{const live=document.querySelectorAll('.row'),imgs=[...live].map(drawRowImg);d.querySelectorAll('.row').forEach((r,k)=>{r.innerHTML='';const im=d.createElement('img');im.src=imgs[k];im.style.cssText='display:block;flex:none;width:438px;height:110px';r.appendChild(im)})}});
 const {jsPDF}=window.jspdf;const p=new jsPDF('p','mm','a4');p.addImage(c.toDataURL('image/jpeg',.95),'JPEG',0,0,210,297);
 const nm=($('f2').value||'').trim().replace(/[\\/:*?"<>|]/g,'');p.save(nm?'我的學習檔案_'+nm+'.pdf':'我的學習檔案.pdf')}catch(err){alert('輸出失敗：'+err.message)}
 page.style.transform=old;wrap.style.overflow='hidden';page.classList.remove('exporting');b.textContent='📄 輸出 PDF'};
