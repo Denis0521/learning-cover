@@ -42,12 +42,17 @@ background:linear-gradient(180deg,#bfe9ff 0%,#fff7c2 55%,#ffd6e7 100%);box-shado
 #frame{position:absolute;top:214px;left:229px;width:336px;height:336px;background:#fff;border:12px solid #fff;
 border-radius:28px;box-shadow:0 0 0 6px #ff9f1c,0 0 0 12px #ffd166,0 8px 10px rgba(0,0,0,.16),0 20px 26px rgba(0,0,0,.22),0 38px 44px rgba(0,0,0,.16);overflow:hidden;cursor:grab;touch-action:none}
 #frame.wide{left:108px;width:578px}
+/* 直式 4:3（內框 270×360）：相框變高，校名／班級／姓名往下壓縮，教師欄位位置不動 */
+#frame.tall{top:208px;left:250px;width:294px;height:384px}
 #frame .inner{position:absolute;inset:0;border-radius:16px;overflow:hidden;background:#fff8e6}
 #ph{position:absolute;left:50%;top:50%;transform-origin:center;display:none;user-select:none;-webkit-user-drag:none;max-width:none}
 #hint{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;color:#c9a46a;font-size:28px;line-height:1.5}
 .exporting #hint{display:none}
 #school span{display:inline-block;--o:3px 0 #fff,-3px 0 #fff,0 3px #fff,0 -3px #fff,2px 2px #fff,-2px -2px #fff,2px -2px #fff,-2px 2px #fff;transform:translateY(-4px);text-shadow:var(--o),0 12px 7px rgba(0,0,0,.22)}
 #school{position:absolute;top:580px;left:0;right:0;text-align:center;font-size:62px;letter-spacing:6px;line-height:1.2}
+.r1{top:674px}.r2{top:750px}.r3{top:826px}
+#page.tall #school{top:610px;line-height:1.15}
+#page.tall .r1{top:686px}#page.tall .r2{top:756px}
 .row{position:absolute;left:0;right:0;height:64px;display:flex;align-items:center;justify-content:center;gap:22px;font-size:38px;color:var(--fc,#4a2c0f)}
 /* 標題：純文字 */
 .row label{flex:none;width:100px;text-align:center;white-space:nowrap;letter-spacing:.1em;text-indent:.1em;font-size:40px;color:var(--fc,#4a2c0f)}
@@ -119,9 +124,9 @@ input[type=range]::-moz-range-thumb{width:30px;height:30px;border-radius:50%;bac
 <div id="title"></div>
 <div id="frame"><div class="inner"><img id="ph" alt=""><div id="hint">點一下<br>選擇相片</div></div></div>
 <div id="school"></div>
-<div class="row" style="top:674px"><label><span>班級</span></label><div class="fld"><input id="f1" maxlength="3" style="letter-spacing:.25em;text-indent:.25em"></div></div>
-<div class="row" style="top:750px"><label><span>姓名</span></label><div class="fld"><input id="f2" maxlength="3"></div></div>
-<div class="row" style="top:826px"><label><span>教師</span></label><div class="fld"><input id="f3" maxlength="3"></div></div>
+<div class="row r1"><label><span>班級</span></label><div class="fld"><input id="f1" maxlength="3" style="letter-spacing:.25em;text-indent:.25em"></div></div>
+<div class="row r2"><label><span>姓名</span></label><div class="fld"><input id="f2" maxlength="3"></div></div>
+<div class="row r3"><label><span>教師</span></label><div class="fld"><input id="f3" maxlength="3"></div></div>
 </div></div>
 
 </div>
@@ -129,7 +134,7 @@ input[type=range]::-moz-range-thumb{width:30px;height:30px;border-radius:50%;bac
 <div class="tabs"><button class="on" data-t="p1">📷 相片</button><button data-t="p2">🔤 標題</button><button data-t="p3">🏫 校名</button><button data-t="p6">✏️ 填寫</button><button data-t="p4">🎨 底圖</button><button data-t="p5">📤 匯出</button></div>
 <div class="pane on" id="p1">
 <div class="btns"><button id="pickPh">選擇相片</button><button class="gr" id="camPh">📸 拍照</button><button class="alt" id="clrPh">移除</button><button class="alt" id="rst">重置</button></div>
-<div class="btns" id="fshape"><span>相框</span><button class="sel" data-s="sq">⬜ 方形</button><button data-s="wide">▭ 16:9 寬版</button></div>
+<div class="btns" id="fshape"><span>相框</span><button class="sel" data-s="sq">⬜ 方形</button><button data-s="wide">▭ 16:9 寬版</button><button data-s="tall">▯ 直式 4:3</button></div>
 <div class="btns">縮放<input type="range" id="zoom" min="50" max="400" value="100"></div>
 <div class="btns mv"><span>移動</span><button class="gr" data-d="-1,0">◀</button><button class="gr" data-d="0,-1">▲</button><button class="gr" data-d="0,1">▼</button><button class="gr" data-d="1,0">▶</button></div></div>
 <div class="pane" id="p2"><div class="btns"><span>文字</span><input class="txt" id="tTxt" maxlength="12" value="我的學習檔案" placeholder="輸入標題"></div><div class="btns" id="fonts"></div></div>
@@ -152,23 +157,24 @@ const $=id=>document.getElementById(id);
 const cols=[['#ff4d4d','#a80f1f'],['#ff9f1c','#b25e00'],['#2ec4b6','#127a70'],['#3a86ff','#1646a8'],['#9b5de5','#52209a'],['#ff4d9d','#a3195b']];
 const rot=[-6,5,-4,6,-5,4];
 /* 文字過長時自動縮小字級，避免超出頁面 */
+const sBase=()=>$('page').classList.contains('tall')?56:62;
 function fitTxt(el,base){el.style.fontSize=base+'px';const max=734;if(el.scrollWidth>max)el.style.fontSize=Math.max(24,Math.floor(base*max/el.scrollWidth))+'px'}
 function renderTitle(t){const el=$('title');el.innerHTML='';[...t].forEach((c,i)=>{const s=document.createElement('span');s.textContent=c===' '?'\u00A0':c;
 const[a,d]=cols[i%6];s.style.cssText=`--r:${rot[i%6]}deg;color:${a};text-shadow:3px 3px 0 #fff,-3px -3px 0 #fff,3px -3px 0 #fff,-3px 3px 0 #fff,0 4px 0 #fff,0 -3px 0 #fff,3px 0 0 #fff,-3px 0 0 #fff,0 8px 0 ${d},0 12px 0 ${d},0 16px 0 ${d},0 22px 14px rgba(0,0,0,.28)`;el.appendChild(s)});fitTxt(el,104)}
 const FONTS=[['粉圓體','Huninn'],['麥克筆','Yusei Magic'],['圓點','Hachi Maru Pop'],['糖果','Mochiy Pop One'],['粗圓','Reggae One'],['芫荽','Iansui'],['粗宋','Noto Serif TC',900],['粗黑','Noto Sans TC',900],['厚黑','Dela Gothic One'],['楷書手寫','LXGW WenKai TC']];
 function setFont(f,w=400){$('title').style.fontFamily=`'${f}','Huninn',sans-serif`;$('title').style.fontWeight=w;fitTxt($('title'),104)}
 function setInput(f,w=400){document.querySelectorAll('.row').forEach(x=>{x.style.fontFamily=`'${f}','Huninn',sans-serif`;x.style.fontWeight=w>400?700:400})}
-function setSchool(f,w=400){$('school').style.fontFamily=`'${f}','Huninn',sans-serif`;$('school').style.fontWeight=w;fitTxt($('school'),62)}
+function setSchool(f,w=400){$('school').style.fontFamily=`'${f}','Huninn',sans-serif`;$('school').style.fontWeight=w;fitTxt($('school'),sBase())}
 FONTS.forEach(([n,f,w])=>{const b=document.createElement('button');b.className='alt';b.textContent=n;b.style.fontFamily=`'${f}','Huninn'`;b.onclick=()=>setFont(f,w);$('fonts').appendChild(b);const c=b.cloneNode(true);c.onclick=()=>setSchool(f,w);$('fonts2').appendChild(c);const d=b.cloneNode(true);d.onclick=()=>setInput(f,w);$('fonts3').appendChild(d)});
 setFont('Hachi Maru Pop');setSchool('Mochiy Pop One');
 ['fonts','fonts2','fonts3'].forEach(id=>$(id).addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;$(id).querySelectorAll('button').forEach(x=>x.classList.remove('sel'));b.classList.add('sel')}));
 $('fonts').children[2].classList.add('sel');$('fonts2').children[3].classList.add('sel');$('fonts3').children[0].classList.add('sel');
 const sc2=['#ff4d4d','#ff9f1c','#2ec4b6','#3a86ff','#9b5de5'];
-function renderSchool(t){const el=$('school');el.innerHTML='';[...t].forEach((c,i)=>{const e=document.createElement('span');e.textContent=c===' '?'\u00A0':c;e.style.cssText=`color:${sc2[i%5]};--d:${(-i*.3).toFixed(1)}s`;el.appendChild(e)});fitTxt(el,62)}
+function renderSchool(t){const el=$('school');el.innerHTML='';[...t].forEach((c,i)=>{const e=document.createElement('span');e.textContent=c===' '?'\u00A0':c;e.style.cssText=`color:${sc2[i%5]};--d:${(-i*.3).toFixed(1)}s`;el.appendChild(e)});fitTxt(el,sBase())}
 renderTitle($('tTxt').value);renderSchool($('sTxt').value);
 $('tTxt').addEventListener('input',e=>renderTitle(e.target.value));
 $('sTxt').addEventListener('input',e=>renderSchool(e.target.value));
-if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{fitTxt($('title'),104);fitTxt($('school'),62)});
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{fitTxt($('title'),104);fitTxt($('school'),sBase())});
 const FC=[['深灰','#3a3a3a'],['深藍','#12306b'],['深紫','#4a2182'],['深綠','#145a32'],['深棕','#4a2c0f']];
 FC.forEach(([n,c],i)=>{const b=document.createElement('button');b.className='sw';b.title=n;b.style.background=c;b.onclick=()=>{document.querySelectorAll('.row').forEach(r=>r.style.setProperty('--fc',c));$('fcs').querySelectorAll('button').forEach(x=>x.classList.toggle('sel',x===b))};$('fcs').appendChild(b);if(i==4)b.classList.add('sel')});
 // fit
@@ -180,11 +186,12 @@ addEventListener('resize',fit);fit();
 // photo
 const ph=$('ph'),fr=$('frame');let st={x:0,y:0,z:1,w:0,h:0};
 function draw(){ph.style.transform=`translate(calc(-50% + ${st.x}px),calc(-50% + ${st.y}px)) scale(${st.z})`}
-let FW=312;const FH=312;/* 相框內框尺寸：方形 312×312；16:9 為 554×312 */
+let FW=312,FH=312;/* 相框內框尺寸：方形 312×312；16:9 為 554×312；直式 4:3 為 270×360 */
 function sizePh(){if(!st.w)return;const k=Math.max(FW/st.w,FH/st.h);ph.style.width=st.w*k+'px';ph.style.height=st.h*k+'px'}
 function reset(){if(!st.w)return;sizePh();st.x=st.y=0;st.z=1;$('zoom').value=100;draw()}
-document.querySelectorAll('#fshape button').forEach(b=>b.onclick=e=>{e.stopPropagation();const w=b.dataset.s==='wide';fr.classList.toggle('wide',w);FW=w?554:312;
-document.querySelectorAll('#fshape button').forEach(x=>x.classList.toggle('sel',x===b));sizePh();draw()});
+const SHAPES={sq:[312,312,''],wide:[554,312,'wide'],tall:[270,360,'tall']};
+document.querySelectorAll('#fshape button').forEach(b=>b.onclick=e=>{e.stopPropagation();const[w,h,c]=SHAPES[b.dataset.s];fr.classList.remove('wide','tall');if(c)fr.classList.add(c);page.classList.toggle('tall',c==='tall');FW=w;FH=h;
+document.querySelectorAll('#fshape button').forEach(x=>x.classList.toggle('sel',x===b));fitTxt($('school'),sBase());sizePh();draw()});
 function loadFile(f,cb){if(!f)return;const r=new FileReader();r.onload=()=>cb(r.result);r.readAsDataURL(f)}
 $('pickPh').onclick=fr.onclick=e=>{if(!st.moved)$('phIn').click()};
 $('phIn').onchange=e=>loadFile(e.target.files[0],u=>{ph.onload=()=>{st.w=ph.naturalWidth;st.h=ph.naturalHeight;ph.style.display='block';$('hint').style.display='none';reset()};ph.src=u;e.target.value=''});
