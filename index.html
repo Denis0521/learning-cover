@@ -23,10 +23,6 @@
   if(isAndroid){location.replace(window.__chromeUrl)}
 })();
 </script>
-
-<!-- 修正：換回官方最穩定的 CDN 來源 (不加 .min.js 避免找不到檔案) -->
-<script src="https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.4.3/dist/browser/bundle.umd.js"></script>
-
 <title>學習檔案封面設計</title>
 <link href="https://fonts.googleapis.com/css2?family=Huninn&family=Yusei+Magic&family=Hachi+Maru+Pop&family=Mochiy+Pop+One&family=Reggae+One&family=Iansui&family=Noto+Serif+TC:wght@700;900&family=Noto+Sans+TC:wght@700;900&family=LXGW+WenKai+TC&family=Dela+Gothic+One&display=swap" rel="stylesheet">
 <style>
@@ -49,6 +45,14 @@ border-radius:28px;box-shadow:0 0 0 6px #ff9f1c,0 0 0 12px #ffd166,0 8px 10px rg
 /* 直式 4:3（內框 264×352）：上下置中於標題底（約158）與校名頂（580）之間；校名與各欄位位置完全不動 */
 #frame.tall{top:181px;left:253px;width:288px;height:376px}
 #frame .inner{position:absolute;inset:0;border-radius:16px;overflow:hidden;background:#fff8e6}
+#photoBg{position:absolute;inset:0;z-index:0;background:linear-gradient(180deg,#bfe9ff,#fff7c2 55%,#ffd6e7);background-size:cover;background-position:center}
+#ph{z-index:1}
+#photoTools{display:grid;gap:7px}
+#photoTools .tooltitle{font-weight:700;font-size:14px}
+#photoBgs{display:flex;flex-wrap:wrap;gap:7px}
+#photoBgs button{width:58px;height:58px;padding:0;border:3px solid white;border-radius:12px;box-shadow:0 0 0 1px var(--bd);font-size:11px;color:#333;text-shadow:0 1px 2px white;overflow:hidden}
+#photoBgs button.sel{outline:3px solid #ff9f1c}
+#removeBg:disabled{opacity:.6;cursor:wait}
 #ph{position:absolute;left:50%;top:50%;transform-origin:center;display:none;user-select:none;-webkit-user-drag:none;max-width:none}
 #hint{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;color:#c9a46a;font-size:28px;line-height:1.5}
 .exporting #hint{display:none}
@@ -119,16 +123,12 @@ input[type=range]::-moz-range-thumb{width:30px;height:30px;border-radius:50%;bac
 .txt:focus{border-color:#ff9f1c}
 #fshape button{background:var(--bg);color:var(--tx);border:2px solid var(--bd);box-shadow:0 3px 0 var(--bd);text-shadow:none;font-weight:400;padding:7px 14px;font-size:15px}
 #fshape button.sel{background:linear-gradient(180deg,#ffe29a,#ffc247);border-color:#ff9f1c;box-shadow:0 3px 0 #c76f00,inset 0 2px 0 rgba(255,255,255,.6)}
-
-/* 相片背景按鈕修正 */
-#phBgs .sw { margin-right: 2px; }
-#phBgs .ph-bg-img { border-radius: 12px !important; width: 46px; height: 46px; }
 </style></head><body>
 <div id="stage"><div id="wrap"><div id="page">
 <img id="bgimg" alt="">
 <div class="deco" style="top:30px;left:30px">⭐</div><div class="deco" style="top:50px;right:36px">🌈</div>
 <div id="title"></div>
-<div id="frame"><div class="inner"><img id="ph" alt=""><div id="hint">點一下<br>選擇相片</div></div></div>
+<div id="frame"><div class="inner"><div id="photoBg"></div><img id="ph" alt=""><div id="hint">點一下<br>選擇相片</div></div></div>
 <div id="school"></div>
 <div class="row r1"><label><span>班級</span></label><div class="fld"><input id="f1" maxlength="3" style="letter-spacing:.25em;text-indent:.25em"></div></div>
 <div class="row r2"><label><span>姓名</span></label><div class="fld"><input id="f2" maxlength="3"></div></div>
@@ -142,34 +142,15 @@ input[type=range]::-moz-range-thumb{width:30px;height:30px;border-radius:50%;bac
 <div class="btns"><button id="pickPh">選擇相片</button><button class="gr" id="camPh">📸 拍照</button><button class="alt" id="clrPh">移除</button><button class="alt" id="rst">重置</button></div>
 <div class="btns" id="fshape"><span>相框</span><button class="sel" data-s="sq">⬜ 方形</button><button data-s="wide">▭ 16:9 寬版</button><button data-s="tall">▯ 直式 4:3</button></div>
 <div class="btns">縮放<input type="range" id="zoom" min="50" max="400" value="100"></div>
-
-<!-- 新增：相片去背與相片背景功能 -->
-<div class="btns">
-  <span>AI去背</span>
-  <button id="rmBgBtn" class="alt" style="background:linear-gradient(180deg,#d47dff,#9b5de5);box-shadow:0 4px 0 #52209a,0 6px 10px rgba(0,0,0,.18),inset 0 2px 0 rgba(255,255,255,.5)">✨ 一鍵去背 (需稍候)</button>
-</div>
-<div class="btns" id="phBgs">
-  <span>相框底圖</span>
-  <button class="sw sel" data-bg="#fff8e6" style="background:#fff8e6" title="預設米白"></button>
-  <!-- 漸層背景 -->
-  <button class="sw" data-bg="linear-gradient(135deg, #fbc2eb, #a6c1ee)" style="background:linear-gradient(135deg, #fbc2eb, #a6c1ee)" title="紫藍漸層"></button>
-  <button class="sw" data-bg="linear-gradient(135deg, #84fab0, #8fd3f4)" style="background:linear-gradient(135deg, #84fab0, #8fd3f4)" title="綠藍漸層"></button>
-  <button class="sw" data-bg="linear-gradient(135deg, #ff9a9e, #fecfef)" style="background:linear-gradient(135deg, #ff9a9e, #fecfef)" title="粉紅漸層"></button>
-  <!-- 風景與室內背景 -->
-  <button class="sw ph-bg-img" data-bg="url('https://images.unsplash.com/photo-1506744626753-edaeb5d8c571?w=400&q=80') center/cover" style="background:url('https://images.unsplash.com/photo-1506744626753-edaeb5d8c571?w=100&q=80') center/cover" title="風景1"></button>
-  <button class="sw ph-bg-img" data-bg="url('https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=400&q=80') center/cover" style="background:url('https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=100&q=80') center/cover" title="風景2"></button>
-  <button class="sw ph-bg-img" data-bg="url('https://images.unsplash.com/photo-1513694203232-719a280e022f?w=400&q=80') center/cover" style="background:url('https://images.unsplash.com/photo-1513694203232-719a280e022f?w=100&q=80') center/cover" title="溫馨室內"></button>
-  <button class="sw ph-bg-img" data-bg="url('https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=400&q=80') center/cover" style="background:url('https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=100&q=80') center/cover" title="兒童房"></button>
-</div>
-
-<div class="btns mv"><span>移動</span><button class="gr" data-d="-1,0">◀</button><button class="gr" data-d="0,-1">▲</button><button class="gr" data-d="0,1">▼</button><button class="gr" data-d="1,0">▶</button></div></div>
+<div class="btns mv"><span>移動</span><button class="gr" data-d="-1,0">◀</button><button class="gr" data-d="0,-1">▲</button><button class="gr" data-d="0,1">▼</button><button class="gr" data-d="1,0">▶</button></div>
+<div id="photoTools"><div class="btns"><button id="removeBg" class="gr">✂️ 一鍵去背</button><button id="restorePhoto" class="alt">還原原圖</button><span id="bgStatus" style="font-size:12px;align-self:center">上傳後可去背及更換相片背景</span></div><div class="btns"><span class="tooltitle">相片背景｜漸層、風景、室內</span><button type="button" class="alt" id="pickPhotoBg">＋自訂背景</button></div><div id="photoBgs"></div></div></div>
 <div class="pane" id="p2"><div class="btns"><span>文字</span><input class="txt" id="tTxt" maxlength="12" value="我的學習檔案" placeholder="輸入標題"></div><div class="btns" id="fonts"></div></div>
 <div class="pane" id="p3"><div class="btns"><span>文字</span><input class="txt" id="sTxt" maxlength="14" value="遠東幼兒園" placeholder="輸入副標題（校名）"></div><div class="btns" id="fonts2"></div></div>
 <div class="pane" id="p4"><div class="btns"><button id="pickBg">插入 A4 直式圖案</button><button class="alt" id="clrBg">還原預設</button></div><div class="btns" id="sws"></div><div class="btns" id="bgs"></div></div>
 <div class="pane" id="p6"><div class="btns" id="fonts3"></div><div class="btns"><span>字色</span><span id="fcs" class="btns"></span></div></div>
 <div class="pane" id="p5"><div class="btns"><button id="exJpg" style="font-size:18px;padding:14px">🖼 JPG</button><button class="alt" id="exPdf" style="font-size:18px;padding:14px">📄 PDF</button></div></div>
 </div>
-<input type="file" id="phIn" accept="image/*" hidden><input type="file" id="camIn" accept="image/*" capture="environment" hidden><input type="file" id="bgIn" accept="image/*" hidden>
+<input type="file" id="photoBgIn" accept="image/*" hidden><input type="file" id="phIn" accept="image/*" hidden><input type="file" id="camIn" accept="image/*" capture="environment" hidden><input type="file" id="bgIn" accept="image/*" hidden>
 
 <button id="clearAll">🗑 清除</button>
 <div id="pwaBar"><div class="card"><img src="icon-192.png" alt=""><div class="tx"><b>安裝「學習封面」</b><span id="pwaTxt">安裝到手機桌面，下次一點就能開啟，也可離線使用。</span></div><div class="bt"><button class="no" id="pwaNo">稍後</button><button id="pwaYes">立即安裝</button></div></div></div>
@@ -219,11 +200,26 @@ document.querySelectorAll('#fshape button').forEach(b=>b.onclick=e=>{e.stopPropa
 document.querySelectorAll('#fshape button').forEach(x=>x.classList.toggle('sel',x===b));sizePh();draw()});
 function loadFile(f,cb){if(!f)return;const r=new FileReader();r.onload=()=>cb(r.result);r.readAsDataURL(f)}
 $('pickPh').onclick=fr.onclick=e=>{if(!st.moved)$('phIn').click()};
-$('phIn').onchange=e=>loadFile(e.target.files[0],u=>{ph.onload=()=>{st.w=ph.naturalWidth;st.h=ph.naturalHeight;ph.style.display='block';$('hint').style.display='none';reset()};ph.src=u;e.target.value=''});
-function clearPhoto(){ph.style.display='none';ph.removeAttribute('src');$('hint').style.display='flex';st.w=0;st.x=st.y=0;st.z=1;$('zoom').value=100}
+let originalPhotoData='';
+async function preparePhoto(file){
+ if(!file)return;
+ try{
+  $('bgStatus').textContent='正在調整相片大小…';
+  const data=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=reject;r.readAsDataURL(file)});
+  const img=new Image();img.src=data;await new Promise((resolve,reject)=>{img.onload=resolve;img.onerror=reject});
+  const max=1600,scale=Math.min(1,max/Math.max(img.naturalWidth,img.naturalHeight));
+  const cv=document.createElement('canvas');cv.width=Math.max(1,Math.round(img.naturalWidth*scale));cv.height=Math.max(1,Math.round(img.naturalHeight*scale));
+  cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height);
+  originalPhotoData=cv.toDataURL('image/jpeg',.92);
+  showPhoto(originalPhotoData);$('bgStatus').textContent=`已調整為 ${cv.width} × ${cv.height}，可開始去背`;
+ }catch(err){$('bgStatus').textContent='相片讀取失敗：'+err.message}
+}
+function showPhoto(src){ph.onload=()=>{st.w=ph.naturalWidth;st.h=ph.naturalHeight;ph.style.display='block';$('hint').style.display='none';reset()};ph.src=src}
+$('phIn').onchange=e=>{preparePhoto(e.target.files[0]);e.target.value=''};
+function clearPhoto(){ph.style.display='none';ph.removeAttribute('src');$('hint').style.display='flex';st.w=0;st.x=st.y=0;st.z=1;$('zoom').value=100;originalPhotoData='';$('photoBg').style.background='linear-gradient(180deg,#bfe9ff,#fff7c2 55%,#ffd6e7)';$('bgStatus').textContent='上傳後可去背及更換相片背景'}
 $('clrPh').onclick=e=>{e.stopPropagation();clearPhoto()};
 $('camPh').onclick=()=>$('camIn').click();
-$('camIn').onchange=$('phIn').onchange;
+$('camIn').onchange=e=>{preparePhoto(e.target.files[0]);e.target.value=''};
 $('clearAll').onclick=()=>{if(confirm('確定要清除相片和姓名嗎？')){clearPhoto();$('f2').value=''}};
 $('rst').onclick=reset;
 $('zoom').oninput=e=>{st.z=e.target.value/100;draw()};
@@ -236,6 +232,38 @@ const dx=(e.clientX-drag.x)/sc,dy=(e.clientY-drag.y)/sc;if(Math.abs(dx)+Math.abs
 const up=e=>{pts.delete(e.pointerId);setTimeout(()=>st.moved=false,50)};
 fr.addEventListener('pointerup',up);fr.addEventListener('pointercancel',up);
 fr.addEventListener('wheel',e=>{e.preventDefault();st.z=Math.min(4,Math.max(.5,st.z*(e.deltaY<0?1.06:.94)));$('zoom').value=st.z*100;draw()},{passive:false});
+// 相片去背與相片框背景
+const photoBg=$('photoBg');
+$('pickPhotoBg').onclick=()=>$('photoBgIn').click();
+$('photoBgIn').onchange=e=>{const f=e.target.files[0];if(!f)return;loadFile(f,u=>{photoBg.style.backgroundImage=`url(\"${u}\")`;photoBg.style.backgroundSize='cover';photoBg.style.backgroundPosition='center';$('photoBgs').querySelectorAll('button').forEach(x=>x.classList.remove('sel'));$('bgStatus').textContent='已套用自訂相片背景';});e.target.value=''};
+const PHOTO_BACKGROUNDS=[
+ ['晨曦漸層','linear-gradient(145deg,#ffd6e7,#fff1bd 55%,#bfe9ff)'],
+ ['海洋藍','linear-gradient(160deg,#83d8f5,#d6f4ff 55%,#4a9ed8)'],
+ ['薰衣草','linear-gradient(145deg,#d9c7ff,#f6d8f0 55%,#b8d7ff)'],
+ ['薄荷綠','linear-gradient(145deg,#b8f0d2,#f4ffd5 55%,#8bd6c6)'],
+ ['蜜桃粉','linear-gradient(145deg,#ffc3a0,#ffafbd 55%,#ffe6c7)'],
+ ['星空紫','radial-gradient(circle at 75% 20%,#ffe7a3 0 2%,transparent 3%),linear-gradient(160deg,#172554,#43318b 60%,#9b70c9)'],
+ ['山林風景','linear-gradient(180deg,transparent 0 48%,#a8d8a0 49% 62%,#5eaa79 63% 75%,#34775b 76%),radial-gradient(circle at 75% 22%,#fff0b3 0 8%,transparent 9%),linear-gradient(#8ed3ef,#e2f5d5)'],
+ ['海邊風景','linear-gradient(180deg,transparent 0 48%,#f7d99a 49% 54%,#5bc4d8 55% 78%,#1684ad 79%),radial-gradient(circle at 76% 20%,#fff2b1 0 9%,transparent 10%),linear-gradient(#8ed5f4,#e7f8f6)'],
+ ['花園風景','radial-gradient(circle at 18% 75%,#ff8eb4 0 5%,transparent 6%),radial-gradient(circle at 80% 67%,#ffe18a 0 6%,transparent 7%),linear-gradient(180deg,#bde7ff 0 48%,#a5d69a 49% 100%)'],
+ ['木質客廳','linear-gradient(90deg,transparent 0 12%,#a6d8f0 12% 40%,transparent 40% 100%),linear-gradient(180deg,#f6e8d2 0 70%,#bd8d62 71% 100%)'],
+ ['明亮教室','linear-gradient(90deg,transparent 0 8%,#bde5fa 8% 35%,transparent 35% 42%,#bde5fa 42% 69%,transparent 69%),linear-gradient(180deg,#fff1d8 0 72%,#d5ae82 73% 100%)'],
+ ['簡約室內','linear-gradient(90deg,#e8ded0 0 24%,#f8f4ed 24% 76%,#e8ded0 76%),linear-gradient(180deg,transparent 0 76%,#c9b39b 77% 100%)']
+];
+PHOTO_BACKGROUNDS.forEach(([name,bg],i)=>{const b=document.createElement('button');b.type='button';b.title=name;b.textContent=name;b.style.background=bg;b.onclick=()=>{photoBg.style.background=bg;$('photoBgs').querySelectorAll('button').forEach(x=>x.classList.toggle('sel',x===b))};$('photoBgs').appendChild(b)});
+$('restorePhoto').onclick=()=>{if(originalPhotoData){showPhoto(originalPhotoData);$('bgStatus').textContent='已還原調整大小後的原始相片'}else $('bgStatus').textContent='請先選擇相片'};
+$('removeBg').onclick=async()=>{
+ if(!originalPhotoData){$('bgStatus').textContent='請先選擇相片';return}
+ const btn=$('removeBg');btn.disabled=true;btn.textContent='去背處理中…';$('bgStatus').textContent='首次使用需下載去背模型，請保持網路連線…';
+ try{
+  const mod=await import('https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.5.5/+esm');
+  const blob=await (await fetch(originalPhotoData)).blob();
+  const result=await mod.removeBackground(blob,{model:'small',output:{format:'image/png'}});
+  const png=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=reject;r.readAsDataURL(result)});
+  showPhoto(png);$('bgStatus').textContent='去背完成！已保留透明背景，可選擇下方背景套用。';
+ }catch(err){console.error(err);$('bgStatus').textContent='去背失敗，請確認網路連線後重試。';alert('去背功能無法完成：'+(err.message||err)+'\n請使用 Chrome 並保持網路連線。')}
+ finally{btn.disabled=false;btn.textContent='✂️ 一鍵去背'}
+};
 // background
 const bi=$('bgimg'),decos=document.querySelectorAll('.deco');
 $('pickBg').onclick=()=>$('bgIn').click();
@@ -311,70 +339,6 @@ else{const blob=await new Promise(r=>c.toBlob(r,'image/jpeg',.95));const a=docum
 page.style.transform=old;wrap.style.overflow='hidden';page.classList.remove('exporting');btn.textContent=label;btn.disabled=false}
 $('exJpg').onclick=()=>exportCover($('exJpg'),'🖼 JPG','jpg');
 $('exPdf').onclick=()=>exportCover($('exPdf'),'📄 PDF','pdf');
-
-// ===== 新增：圖片縮放函式，避免手機記憶體不足 =====
-function getResizedBlob(img, maxDim = 1024) {
-  return new Promise((resolve) => {
-    let w = img.naturalWidth;
-    let h = img.naturalHeight;
-    // 如果圖片大於 maxDim，依比例縮小
-    if (w > maxDim || h > maxDim) {
-      const ratio = Math.min(maxDim / w, maxDim / h);
-      w = Math.round(w * ratio);
-      h = Math.round(h * ratio);
-    }
-    const cvs = document.createElement('canvas');
-    cvs.width = w;
-    cvs.height = h;
-    const ctx = cvs.getContext('2d');
-    ctx.drawImage(img, 0, 0, w, h);
-    // 輸出成 0.85 壓縮比的 JPEG，大幅減輕 AI 負擔
-    cvs.toBlob(blob => resolve(blob), 'image/jpeg', 0.85);
-  });
-}
-
-// ===== 相片 AI 去背與背景切換 =====
-$('rmBgBtn').onclick = async () => {
-  if (!st.w) return alert('請先上傳或拍攝相片！');
-  const btn = $('rmBgBtn');
-  btn.textContent = '⏳ 去背中(約需10~30秒)...';
-  btn.disabled = true;
-  try {
-    const config = {
-      // 指定使用 jsdelivr 確保模型檔可以順利載入
-      publicPath: 'https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.4.3/dist/'
-    };
-    
-    // 1. 將畫布上的原圖進行壓縮 (最大邊長 1024px)
-    const resizedBlob = await getResizedBlob(ph, 1024);
-
-    // 2. 將縮小後的檔案交給 AI 運算，解決手機閃退或 OOM 問題
-    const blob = await imglyRemoveBackground(resizedBlob, config);
-    
-    const url = URL.createObjectURL(blob);
-    ph.src = url; // 將原圖替換為去背後的透明 PNG
-    btn.textContent = '✅ 去背完成';
-    setTimeout(() => { btn.textContent = '✨ 一鍵去背'; }, 3000);
-  } catch (err) {
-    console.error('去背失敗:', err);
-    alert('去背失敗：' + (err.message || '網路或記憶體錯誤') + '\n\n建議：請確認網路順暢並再試一次。');
-    btn.textContent = '✨ 一鍵去背';
-  }
-  btn.disabled = false;
-};
-
-// 相片背景切換邏輯
-document.querySelectorAll('#phBgs .sw').forEach(b => {
-  b.onclick = () => {
-    // 移除其他按鈕的選取狀態
-    document.querySelectorAll('#phBgs .sw').forEach(x => x.classList.remove('sel'));
-    b.classList.add('sel');
-    // 替換相框內層的背景
-    const inner = document.querySelector('#frame .inner');
-    inner.style.background = b.dataset.bg;
-  };
-});
-
 // ===== PWA =====
 if('serviceWorker' in navigator&&!window.__inLine){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}
 (function(){
