@@ -48,6 +48,22 @@ border-radius:28px;box-shadow:0 0 0 6px #ff9f1c,0 0 0 12px #ffd166,0 8px 10px rg
 #photoBg{position:absolute;inset:0;z-index:0;background:linear-gradient(180deg,#bfe9ff,#fff7c2 55%,#ffd6e7);background-size:cover;background-position:center}
 #ph{z-index:1}
 #photoTools{display:grid;gap:7px}
+/* 相片模式：只放大顯示相框，讓手機上更容易調整 */
+body.photo-focus #stage{background:radial-gradient(ellipse at center,#fff8e8,#ead9bd)}
+body.photo-focus #wrap{overflow:hidden;border-radius:18px;box-shadow:0 10px 28px rgba(0,0,0,.22)}
+body.photo-focus #frame{cursor:grab}
+.photo-subtabs{display:flex;gap:6px;flex-wrap:wrap;background:var(--bg);padding:5px;border-radius:16px}
+.photo-subtabs button{flex:1;min-width:68px;padding:8px 6px;font-size:13px;background:transparent;color:var(--tx);box-shadow:none;text-shadow:none}
+.photo-subtabs button.on{background:linear-gradient(180deg,#ffd166,#ff9f1c);color:#fff;box-shadow:0 2px 0 #c76f00}
+.photo-subpane{display:none;gap:8px;align-content:start}
+.photo-subpane.on{display:grid}
+#photoBgs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+#photoBgs button{width:100%;height:72px;font-size:12px;position:relative;background-size:cover!important;background-position:center!important;color:white;text-shadow:0 1px 3px #000,0 1px 7px #000}
+#photoBgs button:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 25%,rgba(0,0,0,.38));pointer-events:none}
+#photoBg:after{content:"";position:absolute;inset:0;pointer-events:none;background:var(--photo-light,transparent);mix-blend-mode:screen}
+#photoBg{overflow:hidden}
+.photo-note{font-size:12px;opacity:.75}
+@media(max-width:520px){#panel{padding-left:7px;padding-right:7px}.tabs{overflow-x:auto}.tabs button{min-width:58px;font-size:12px}.pane{padding:8px}#photoBgs{grid-template-columns:repeat(3,minmax(0,1fr))}}
 #photoTools .tooltitle{font-weight:700;font-size:14px}
 #photoBgs{display:flex;flex-wrap:wrap;gap:7px}
 #photoBgs button{width:58px;height:58px;padding:0;border:3px solid white;border-radius:12px;box-shadow:0 0 0 1px var(--bd);font-size:11px;color:#333;text-shadow:0 1px 2px white;overflow:hidden}
@@ -139,11 +155,12 @@ input[type=range]::-moz-range-thumb{width:30px;height:30px;border-radius:50%;bac
 <div id="panel">
 <div class="tabs"><button class="on" data-t="p1">📷 相片</button><button data-t="p2">🔤 標題</button><button data-t="p3">🏫 校名</button><button data-t="p6">✏️ 填寫</button><button data-t="p4">🎨 底圖</button><button data-t="p5">📤 匯出</button></div>
 <div class="pane on" id="p1">
-<div class="btns"><button id="pickPh">選擇相片</button><button class="gr" id="camPh">📸 拍照</button><button class="alt" id="clrPh">移除</button><button class="alt" id="rst">重置</button></div>
-<div class="btns" id="fshape"><span>相框</span><button class="sel" data-s="sq">⬜ 方形</button><button data-s="wide">▭ 16:9 寬版</button><button data-s="tall">▯ 直式 4:3</button></div>
-<div class="btns">縮放<input type="range" id="zoom" min="50" max="400" value="100"></div>
-<div class="btns mv"><span>移動</span><button class="gr" data-d="-1,0">◀</button><button class="gr" data-d="0,-1">▲</button><button class="gr" data-d="0,1">▼</button><button class="gr" data-d="1,0">▶</button></div>
-<div id="photoTools"><div class="btns"><button id="removeBg" class="gr">✂️ 一鍵去背</button><button id="restorePhoto" class="alt">還原原圖</button><span id="bgStatus" style="font-size:12px;align-self:center">上傳後可去背及更換相片背景</span></div><div class="btns"><span class="tooltitle">相片背景｜漸層、風景、室內</span><button type="button" class="alt" id="pickPhotoBg">＋自訂背景</button></div><div id="photoBgs"></div></div></div>
+<div class="photo-subtabs"><button class="on" data-photo-tab="photoPreview">🔎 預覽</button><button data-photo-tab="photoAdjust">↔️ 調整</button><button data-photo-tab="photoCutout">✂️ 去背</button><button data-photo-tab="photoBackground">🌄 背景光影</button></div>
+<div class="photo-subpane on" id="photoPreview"><div class="photo-note">預覽區只顯示相框，可直接拖曳照片；雙指或滑輪可縮放。</div><div class="btns"><button id="pickPh">選擇相片</button><button class="gr" id="camPh">📸 拍照</button><button class="alt" id="clrPh">移除</button></div></div>
+<div class="photo-subpane" id="photoAdjust"><div class="btns" id="fshape"><span>相框比例</span><button class="sel" data-s="sq">⬜ 方形</button><button data-s="wide">▭ 16:9</button><button data-s="tall">▯ 直式 4:3</button></div><div class="btns">縮放<input type="range" id="zoom" min="50" max="400" value="100"></div><div class="btns mv"><span>移動照片</span><button class="gr" data-d="-1,0">◀</button><button class="gr" data-d="0,-1">▲</button><button class="gr" data-d="0,1">▼</button><button class="gr" data-d="1,0">▶</button><button class="alt" id="rst">重置</button></div></div>
+<div class="photo-subpane" id="photoCutout"><div class="btns"><button id="removeBg" class="gr">✂️ 一鍵去背</button><button id="restorePhoto" class="alt">還原原圖</button></div><div id="bgStatus" class="photo-note">上傳後可去背及更換相片背景</div><div class="photo-note">首次使用去背需下載模型，請保持網路連線。</div></div>
+<div class="photo-subpane" id="photoBackground"><div class="btns"><span class="tooltitle">寫實照片背景</span><button type="button" class="alt" id="pickPhotoBg">＋自訂背景</button></div><div id="photoBgs"></div><div class="btns"><span class="tooltitle">光影效果</span><button type="button" data-light="none" class="sel">原始</button><button type="button" data-light="soft">柔和光</button><button type="button" data-light="back">逆光</button><button type="button" data-light="warm">暖陽</button><button type="button" data-light="shade">柔陰影</button></div><div class="photo-note">建議先完成去背，再套用背景與光影；背景照片首次載入需網路。</div></div>
+</div>
 <div class="pane" id="p2"><div class="btns"><span>文字</span><input class="txt" id="tTxt" maxlength="12" value="我的學習檔案" placeholder="輸入標題"></div><div class="btns" id="fonts"></div></div>
 <div class="pane" id="p3"><div class="btns"><span>文字</span><input class="txt" id="sTxt" maxlength="14" value="遠東幼兒園" placeholder="輸入副標題（校名）"></div><div class="btns" id="fonts2"></div></div>
 <div class="pane" id="p4"><div class="btns"><button id="pickBg">插入 A4 直式圖案</button><button class="alt" id="clrBg">還原預設</button></div><div class="btns" id="sws"></div><div class="btns" id="bgs"></div></div>
@@ -185,9 +202,10 @@ const FC=[['深灰','#3a3a3a'],['深藍','#12306b'],['深紫','#4a2182'],['深�
 FC.forEach(([n,c],i)=>{const b=document.createElement('button');b.className='sw';b.title=n;b.style.background=c;b.onclick=()=>{document.querySelectorAll('.row').forEach(r=>r.style.setProperty('--fc',c));$('fcs').querySelectorAll('button').forEach(x=>x.classList.toggle('sel',x===b))};$('fcs').appendChild(b);if(i==4)b.classList.add('sel')});
 // fit
 const page=$('page'),wrap=$('wrap');let sc=1;
-function fit(){const g=$('stage');sc=Math.min(1,(g.clientWidth-16)/794,(g.clientHeight-16)/1123);if(sc<=0)return;wrap.style.height=1123*sc+'px';wrap.style.width=794*sc+'px';page.style.transform=`scale(${sc})`}
-new ResizeObserver(fit).observe($('stage'));
-document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tabs button,.pane').forEach(x=>x.classList.remove('on'));b.classList.add('on');$(b.dataset.t).classList.add('on')});
+function fit(){const g=$('stage');const focus=document.body.classList.contains('photo-focus');if(focus){const frameEl=$('frame');const fw=frameEl.offsetWidth,fh=frameEl.offsetHeight,fx=frameEl.offsetLeft,fy=frameEl.offsetTop;sc=Math.min(1,(g.clientWidth-28)/fw,(g.clientHeight-28)/fh);if(sc<=0)return;wrap.style.width=fw*sc+'px';wrap.style.height=fh*sc+'px';page.style.transform=`translate(${-fx*sc}px,${-fy*sc}px) scale(${sc})`}else{sc=Math.min(1,(g.clientWidth-16)/794,(g.clientHeight-16)/1123);if(sc<=0)return;wrap.style.height=1123*sc+'px';wrap.style.width=794*sc+'px';page.style.transform=`scale(${sc})`}}
+document.body.classList.add('photo-focus');new ResizeObserver(fit).observe($('stage'));
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tabs button,.pane').forEach(x=>x.classList.remove('on'));b.classList.add('on');$(b.dataset.t).classList.add('on');document.body.classList.toggle('photo-focus',b.dataset.t==='p1');requestAnimationFrame(fit)});
+document.querySelectorAll('[data-photo-tab]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-photo-tab],.photo-subpane').forEach(x=>x.classList.remove('on'));b.classList.add('on');$(b.dataset.photoTab).classList.add('on')});
 addEventListener('resize',fit);fit();
 // photo
 const ph=$('ph'),fr=$('frame');let st={x:0,y:0,z:1,w:0,h:0};
@@ -197,7 +215,7 @@ function sizePh(){if(!st.w)return;const k=Math.max(FW/st.w,FH/st.h);ph.style.wid
 function reset(){if(!st.w)return;sizePh();st.x=st.y=0;st.z=1;$('zoom').value=100;draw()}
 const SHAPES={sq:[312,312,''],wide:[554,312,'wide'],tall:[264,352,'tall']};
 document.querySelectorAll('#fshape button').forEach(b=>b.onclick=e=>{e.stopPropagation();const[w,h,c]=SHAPES[b.dataset.s];fr.classList.remove('wide','tall');if(c)fr.classList.add(c);FW=w;FH=h;
-document.querySelectorAll('#fshape button').forEach(x=>x.classList.toggle('sel',x===b));sizePh();draw()});
+document.querySelectorAll('#fshape button').forEach(x=>x.classList.toggle('sel',x===b));sizePh();draw();requestAnimationFrame(fit)});
 function loadFile(f,cb){if(!f)return;const r=new FileReader();r.onload=()=>cb(r.result);r.readAsDataURL(f)}
 $('pickPh').onclick=fr.onclick=e=>{if(!st.moved)$('phIn').click()};
 let originalPhotoData='';
@@ -216,7 +234,7 @@ async function preparePhoto(file){
 }
 function showPhoto(src){ph.onload=()=>{st.w=ph.naturalWidth;st.h=ph.naturalHeight;ph.style.display='block';$('hint').style.display='none';reset()};ph.src=src}
 $('phIn').onchange=e=>{preparePhoto(e.target.files[0]);e.target.value=''};
-function clearPhoto(){ph.style.display='none';ph.removeAttribute('src');$('hint').style.display='flex';st.w=0;st.x=st.y=0;st.z=1;$('zoom').value=100;originalPhotoData='';$('photoBg').style.background='linear-gradient(180deg,#bfe9ff,#fff7c2 55%,#ffd6e7)';$('bgStatus').textContent='上傳後可去背及更換相片背景'}
+function clearPhoto(){ph.style.display='none';ph.removeAttribute('src');$('hint').style.display='flex';st.w=0;st.x=st.y=0;st.z=1;$('zoom').value=100;originalPhotoData='';$('photoBg').style.backgroundImage='linear-gradient(180deg,#bfe9ff,#fff7c2 55%,#ffd6e7)';$('photoBg').style.setProperty('--photo-light','transparent');$('bgStatus').textContent='上傳後可去背及更換相片背景'}
 $('clrPh').onclick=e=>{e.stopPropagation();clearPhoto()};
 $('camPh').onclick=()=>$('camIn').click();
 $('camIn').onchange=e=>{preparePhoto(e.target.files[0]);e.target.value=''};
@@ -237,20 +255,19 @@ const photoBg=$('photoBg');
 $('pickPhotoBg').onclick=()=>$('photoBgIn').click();
 $('photoBgIn').onchange=e=>{const f=e.target.files[0];if(!f)return;loadFile(f,u=>{photoBg.style.backgroundImage=`url(\"${u}\")`;photoBg.style.backgroundSize='cover';photoBg.style.backgroundPosition='center';$('photoBgs').querySelectorAll('button').forEach(x=>x.classList.remove('sel'));$('bgStatus').textContent='已套用自訂相片背景';});e.target.value=''};
 const PHOTO_BACKGROUNDS=[
- ['晨曦漸層','linear-gradient(145deg,#ffd6e7,#fff1bd 55%,#bfe9ff)'],
- ['海洋藍','linear-gradient(160deg,#83d8f5,#d6f4ff 55%,#4a9ed8)'],
- ['薰衣草','linear-gradient(145deg,#d9c7ff,#f6d8f0 55%,#b8d7ff)'],
- ['薄荷綠','linear-gradient(145deg,#b8f0d2,#f4ffd5 55%,#8bd6c6)'],
- ['蜜桃粉','linear-gradient(145deg,#ffc3a0,#ffafbd 55%,#ffe6c7)'],
- ['星空紫','radial-gradient(circle at 75% 20%,#ffe7a3 0 2%,transparent 3%),linear-gradient(160deg,#172554,#43318b 60%,#9b70c9)'],
- ['山林風景','linear-gradient(180deg,transparent 0 48%,#a8d8a0 49% 62%,#5eaa79 63% 75%,#34775b 76%),radial-gradient(circle at 75% 22%,#fff0b3 0 8%,transparent 9%),linear-gradient(#8ed3ef,#e2f5d5)'],
- ['海邊風景','linear-gradient(180deg,transparent 0 48%,#f7d99a 49% 54%,#5bc4d8 55% 78%,#1684ad 79%),radial-gradient(circle at 76% 20%,#fff2b1 0 9%,transparent 10%),linear-gradient(#8ed5f4,#e7f8f6)'],
- ['花園風景','radial-gradient(circle at 18% 75%,#ff8eb4 0 5%,transparent 6%),radial-gradient(circle at 80% 67%,#ffe18a 0 6%,transparent 7%),linear-gradient(180deg,#bde7ff 0 48%,#a5d69a 49% 100%)'],
- ['木質客廳','linear-gradient(90deg,transparent 0 12%,#a6d8f0 12% 40%,transparent 40% 100%),linear-gradient(180deg,#f6e8d2 0 70%,#bd8d62 71% 100%)'],
- ['明亮教室','linear-gradient(90deg,transparent 0 8%,#bde5fa 8% 35%,transparent 35% 42%,#bde5fa 42% 69%,transparent 69%),linear-gradient(180deg,#fff1d8 0 72%,#d5ae82 73% 100%)'],
- ['簡約室內','linear-gradient(90deg,#e8ded0 0 24%,#f8f4ed 24% 76%,#e8ded0 76%),linear-gradient(180deg,transparent 0 76%,#c9b39b 77% 100%)']
+ ['森林晨光','url(https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1200&auto=format&fit=crop&q=85)'],
+ ['山景草原','url(https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=1200&auto=format&fit=crop&q=85)'],
+ ['海邊晴空','url(https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&auto=format&fit=crop&q=85)'],
+ ['海岸浪花','url(https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=1200&auto=format&fit=crop&q=85)'],
+ ['花園綠意','url(https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?w=1200&auto=format&fit=crop&q=85)'],
+ ['日式庭院','url(https://images.unsplash.com/photo-1497250681960-ef046c08a56e?w=1200&auto=format&fit=crop&q=85)'],
+ ['溫馨客廳','url(https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=1200&auto=format&fit=crop&q=85)'],
+ ['明亮居家','url(https://images.unsplash.com/photo-1600585154340-be6161a56c0a?w=1200&auto=format&fit=crop&q=85)'],
+ ['明亮教室','url(https://images.unsplash.com/photo-1509062522246-3755977927d7?w=1200&auto=format&fit=crop&q=85)']
 ];
-PHOTO_BACKGROUNDS.forEach(([name,bg],i)=>{const b=document.createElement('button');b.type='button';b.title=name;b.textContent=name;b.style.background=bg;b.onclick=()=>{photoBg.style.background=bg;$('photoBgs').querySelectorAll('button').forEach(x=>x.classList.toggle('sel',x===b))};$('photoBgs').appendChild(b)});
+PHOTO_BACKGROUNDS.forEach(([name,bg],i)=>{const b=document.createElement('button');b.type='button';b.title=name;b.textContent=name;b.style.backgroundImage=bg;b.onclick=()=>{photoBg.style.backgroundImage=bg;photoBg.style.backgroundSize='cover';photoBg.style.backgroundPosition='center';$('photoBgs').querySelectorAll('button').forEach(x=>x.classList.toggle('sel',x===b));$('bgStatus').textContent='已套用寫實背景：'+name};$('photoBgs').appendChild(b)});
+const LIGHTS={none:'transparent',soft:'linear-gradient(135deg,rgba(255,255,255,.36),rgba(255,255,255,.05) 55%,rgba(255,255,255,.18))',back:'radial-gradient(ellipse at 78% 12%,rgba(255,255,220,.85),rgba(255,244,190,.28) 28%,transparent 62%)',warm:'linear-gradient(135deg,rgba(255,205,130,.42),transparent 60%)',shade:'linear-gradient(180deg,rgba(0,0,0,.05),transparent 38%,rgba(0,0,0,.3))'};
+document.querySelectorAll('[data-light]').forEach(b=>b.onclick=()=>{photoBg.style.setProperty('--photo-light',LIGHTS[b.dataset.light]);document.querySelectorAll('[data-light]').forEach(x=>x.classList.toggle('sel',x===b))});
 $('restorePhoto').onclick=()=>{if(originalPhotoData){showPhoto(originalPhotoData);$('bgStatus').textContent='已還原調整大小後的原始相片'}else $('bgStatus').textContent='請先選擇相片'};
 $('removeBg').onclick=async()=>{
  if(!originalPhotoData){$('bgStatus').textContent='請先選擇相片';return}
