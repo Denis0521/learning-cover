@@ -23,8 +23,9 @@
   if(isAndroid){location.replace(window.__chromeUrl)}
 })();
 </script>
-<!-- 引入 AI 去背函式庫 (改用 unpkg 避免部份 CDN 阻擋) -->
-<script src="https://unpkg.com/@imgly/background-removal@1.4.3/dist/browser/bundle.umd.min.js"></script>
+
+<!-- 修正：換回官方最穩定的 CDN 來源 (不加 .min.js 避免找不到檔案) -->
+<script src="https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.4.3/dist/browser/bundle.umd.js"></script>
 
 <title>學習檔案封面設計</title>
 <link href="https://fonts.googleapis.com/css2?family=Huninn&family=Yusei+Magic&family=Hachi+Maru+Pop&family=Mochiy+Pop+One&family=Reggae+One&family=Iansui&family=Noto+Serif+TC:wght@700;900&family=Noto+Sans+TC:wght@700;900&family=LXGW+WenKai+TC&family=Dela+Gothic+One&display=swap" rel="stylesheet">
@@ -340,7 +341,8 @@ $('rmBgBtn').onclick = async () => {
   btn.disabled = true;
   try {
     const config = {
-      publicPath: 'https://unpkg.com/@imgly/background-removal@1.4.3/dist/'
+      // 指定使用 jsdelivr 確保模型檔可以順利載入
+      publicPath: 'https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.4.3/dist/'
     };
     
     // 1. 將畫布上的原圖進行壓縮 (最大邊長 1024px)
