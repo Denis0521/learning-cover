@@ -126,6 +126,15 @@ input[type=range]::-moz-range-thumb{width:30px;height:30px;border-radius:50%;bac
 #pbThumbs .pbt i{position:absolute;left:0;right:0;bottom:0;font-style:normal;font-size:10px;line-height:14px;background:rgba(0,0,0,.45);color:#fff;text-align:center;text-shadow:none;font-weight:400}
 #toast{position:fixed;left:50%;bottom:calc(220px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:9996;max-width:88%;background:rgba(40,25,10,.88);color:#fff;padding:9px 16px;border-radius:16px;font-size:14px;line-height:1.4;text-align:center;opacity:0;pointer-events:none;transition:opacity .25s}
 #toast.show{opacity:1}
+#ed{position:fixed;inset:0;z-index:99990;background:#1e1a16;display:none;flex-direction:column;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);overscroll-behavior:none}
+#ed.show{display:flex}
+.edTop,.edBot{display:flex;gap:6px;align-items:center;padding:8px;color:#fff;flex:none}
+.edTop button,.edBot button{padding:8px 11px;font-size:14px;white-space:nowrap}
+.edTop .tb{background:#4a3d30;box-shadow:0 3px 0 #2a2118;text-shadow:none}
+.edTop .tb.on{background:linear-gradient(180deg,#ffd166,#ff9f1c);box-shadow:0 3px 0 #c76f00}
+.edTop #edDone{margin-left:auto}
+#edStage{flex:1;min-height:0;position:relative;overflow:hidden}
+#edCv{position:absolute;inset:0;width:100%;height:100%;touch-action:none;display:block}
 </style></head><body>
 <div id="stage"><div id="wrap"><div id="page">
 <img id="bgimg" alt="">
@@ -147,7 +156,7 @@ input[type=range]::-moz-range-thumb{width:30px;height:30px;border-radius:50%;bac
 <div class="btns">縮放<input type="range" id="zoom" min="50" max="400" value="100"></div>
 <div class="btns mv"><span>移動</span><button class="gr" data-d="-1,0">◀</button><button class="gr" data-d="0,-1">▲</button><button class="gr" data-d="0,1">▼</button><button class="gr" data-d="1,0">▶</button></div></div>
 <div class="pane" id="p7">
-<div class="btns" id="cutRow"><button id="cutBtn">🪄 去背</button><button class="alt" id="cutBack" disabled>↩ 還原原圖</button></div>
+<div class="btns" id="cutRow"><button id="cutBtn">🪄 去背</button><button class="gr" id="cutEdit" disabled>✂️ 細修</button><button class="alt" id="cutBack" disabled>↩ 原圖</button></div>
 <div class="btns">邊緣<input type="range" id="cutSl" min="0" max="100" value="50" disabled><span style="font-size:12px;opacity:.7">收縮⇄擴張</span></div>
 <div class="btns" id="bgCats"><button class="sel" data-c="g">🎞 布幕</button><button data-c="l">🌳 戶外</button><button data-c="r">🏫 教室</button><button class="gr" id="pbPick">📁 自選</button></div>
 <div class="btns" id="pbThumbs"></div></div>
@@ -158,6 +167,9 @@ input[type=range]::-moz-range-thumb{width:30px;height:30px;border-radius:50%;bac
 <div class="pane" id="p5"><div class="btns"><button id="exJpg" style="font-size:18px;padding:14px">🖼 JPG</button><button class="alt" id="exPdf" style="font-size:18px;padding:14px">📄 PDF</button></div></div>
 </div>
 <input type="file" id="phIn" accept="image/*" hidden><input type="file" id="camIn" accept="image/*" capture="environment" hidden><input type="file" id="bgIn" accept="image/*" hidden><input type="file" id="pbIn" accept="image/*" hidden><div id="toast"></div>
+<div id="ed"><div class="edTop"><button class="alt" id="edUndo">↩</button><button class="tb on" id="edErase">🧽 擦除</button><button class="tb" id="edKeep">🖌 還原</button><button class="tb" id="edPan">✋</button><button class="gr" id="edDone">完成</button></div>
+<div id="edStage"><canvas id="edCv"></canvas></div>
+<div class="edBot"><span>筆刷</span><input type="range" id="edSize" min="6" max="90" value="28"><button class="alt" id="edBg">🎨</button><button class="alt" id="edFit">⊡</button></div></div>
 
 <button id="clearAll">🗑 清除</button>
 <div id="pwaBar"><div class="card"><img src="icon-192.png" alt=""><div class="tx"><b>安裝「學習封面」</b><span id="pwaTxt">安裝到手機桌面，下次一點就能開啟，也可離線使用。</span></div><div class="bt"><button class="no" id="pwaNo">稍後</button><button id="pwaYes">立即安裝</button></div></div></div>
@@ -289,7 +301,7 @@ function drawRowImg(row){
 // ===== 去背＋換背景（MediaPipe 人像分割，第一次需連網下載模型，之後可離線）=====
 const MP_VER='0.10.14',MP_BASE='https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@'+MP_VER,
 MP_MODEL='https://storage.googleapis.com/mediapipe-models/image_segmenter/selfie_segmenter/float16/latest/selfie_segmenter.tflite';
-const CUT={orig:null,done:false,busy:false,t:.5,w:0,h:0,src:null,p:null};
+const CUT={orig:null,done:false,busy:false,lo:.05,hi:.95,w:0,h:0,A:null,ED:null,id:null,cv:null,cx:null,oc:null};
 let _seg=null,pbSel=null,pbCat='g';
 function toast(m,ms=2400){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove('show'),ms)}
 async function getSeg(){
@@ -298,8 +310,8 @@ async function getSeg(){
   const fs=await V.FilesetResolver.forVisionTasks(MP_BASE+'/wasm');
   _seg=await V.ImageSegmenter.createFromOptions(fs,{baseOptions:{modelAssetPath:MP_MODEL},runningMode:'IMAGE',outputCategoryMask:false,outputConfidenceMasks:true});
   return _seg}
-/* 取得「人物機率」(0~1) */
-function runSeg(seg,cv){
+/* 取得「人物機率」(0~1)；inv 未指定時自動判斷遮罩方向 */
+function runSeg(seg,cv,inv){
   let P=null;
   const grab=r=>{
     const M=r&&r.confidenceMasks;if(!M||!M.length)return;
@@ -311,20 +323,96 @@ function runSeg(seg,cv){
   const ret=seg.segment(cv,grab);
   if(!P&&ret)grab(ret);
   if(!P)return null;
-  /* 保險：若人物機率在邊緣明顯比中間高，代表遮罩方向相反 → 反轉 */
-  const {p,w,h}=P;let ce=0,cn=0,re=0,rn=0;
-  for(let y=0;y<h;y+=4)for(let x=0;x<w;x+=4){const v=p[y*w+x],fx=x/w,fy=y/h;
-    if(fx>.25&&fx<.75&&fy>.25&&fy<.75){ce+=v;cn++}else if(fx<.08||fx>.92||fy<.08||fy>.92){re+=v;rn++}}
-  if(cn&&rn&&re/rn>ce/cn+.3)for(let i=0;i<p.length;i++)p[i]=1-p[i];
-  return P}
-function buildCut(){
-  const {w,h,src,p,t}=CUT,cv=document.createElement('canvas');cv.width=w;cv.height=h;
-  const x=cv.getContext('2d'),id=x.createImageData(w,h),d=id.data;d.set(src);
-  const lo=t-.14,k=1/.28;
-  for(let i=0,j=3;i<p.length;i++,j+=4){let v=(p[i]-lo)*k;v=v<0?0:v>1?1:v;d[j]=v*v*(3-2*v)*255}
-  x.putImageData(id,0,0);return cv}
+  const {p,w,h}=P;
+  if(inv===undefined){/* 保險：人物機率在邊緣明顯比中間高 → 遮罩方向相反 */
+    let ce=0,cn=0,re=0,rn=0;
+    for(let y=0;y<h;y+=4)for(let x=0;x<w;x+=4){const v=p[y*w+x],fx=x/w,fy=y/h;
+      if(fx>.25&&fx<.75&&fy>.25&&fy<.75){ce+=v;cn++}else if(fx<.08||fx>.92||fy<.08||fy>.92){re+=v;rn++}}
+    inv=!!(cn&&rn&&re/rn>ce/cn+.3)}
+  if(inv)for(let i=0;i<p.length;i++)p[i]=1-p[i];
+  P.inv=inv;return P}
+/* 遮罩縮放成指定大小 */
+function fitP(P,w,h){
+  if(P.w===w&&P.h===h)return P.p;
+  const mc=mkc(P.w,P.h),mx=mc.getContext('2d'),mi=mx.createImageData(P.w,P.h);
+  for(let i=0,j=0;i<P.p.length;i++,j+=4){mi.data[j]=mi.data[j+1]=mi.data[j+2]=255;mi.data[j+3]=P.p[i]*255}
+  mx.putImageData(mi,0,0);const oc=mkc(w,h),ox=oc.getContext('2d',{willReadFrequently:true});ox.imageSmoothingQuality='high';ox.drawImage(mc,0,0,w,h);
+  const od=ox.getImageData(0,0,w,h).data,p=new Float32Array(w*h);for(let i=0;i<p.length;i++)p[i]=od[i*4+3]/255;return p}
+function segP(seg,cv,inv){const R=runSeg(seg,cv,inv);return R?{p:fitP(R,cv.width,cv.height),inv:R.inv}:null}
+/* 第二輪：把人物範圍裁出來放大再辨識，並左右翻轉各跑一次取平均 → 邊緣更準 */
+function refineCrop(seg,oc,p,inv){
+  const w=oc.width,h=oc.height;let x0=w,y0=h,x1=-1,y1=-1,cnt=0;
+  for(let y=0;y<h;y+=2)for(let x=0;x<w;x+=2)if(p[y*w+x]>.5){cnt++;if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y}
+  if(cnt<w*h/4*.01)return p;
+  const pw=Math.max(12,(x1-x0)*.08),ph=Math.max(12,(y1-y0)*.08),
+    sx=Math.max(0,Math.floor(x0-pw)),sy=Math.max(0,Math.floor(y0-ph)),ex=Math.min(w,Math.ceil(x1+pw)),ey=Math.min(h,Math.ceil(y1+ph)),cw=ex-sx,ch=ey-sy;
+  if(cw*ch>w*h*.85||cw<16||ch<16)return p;
+  const cc=mkc(cw,ch);cc.getContext('2d').drawImage(oc,sx,sy,cw,ch,0,0,cw,ch);
+  const A=segP(seg,cc,inv);if(!A)return p;
+  const fc=mkc(cw,ch),fx=fc.getContext('2d');fx.translate(cw,0);fx.scale(-1,1);fx.drawImage(cc,0,0);
+  const B=segP(seg,fc,inv),q=new Float32Array(w*h);q.set(p);const f=Math.max(6,Math.min(pw,ph)*.6);
+  for(let y=0;y<ch;y++)for(let x=0;x<cw;x++){let v=A.p[y*cw+x];if(B)v=(v+B.p[y*cw+(cw-1-x)])*.5;
+    const wg=Math.min(1,Math.min(x,cw-1-x,y,ch-1-y)/f),gi=(y+sy)*w+x+sx;q[gi]=p[gi]*(1-wg)+v*wg}
+  return q}
+/* 均值濾波（半徑 r，邊界取實際範圍平均） */
+function boxf(src,w,h,r,out,tmp){
+  for(let y=0;y<h;y++){const o=y*w;let acc=0;const e0=Math.min(r,w-1);for(let x=0;x<=e0;x++)acc+=src[o+x];
+    for(let x=0;x<w;x++){const lo=x-r>0?x-r:0,hi=x+r<w-1?x+r:w-1;tmp[o+x]=acc/(hi-lo+1);const nx=x+r+1;if(nx<w)acc+=src[o+nx];const px=x-r;if(px>=0)acc-=src[o+px]}}
+  for(let x=0;x<w;x++){let acc=0;const e0=Math.min(r,h-1);for(let y=0;y<=e0;y++)acc+=tmp[y*w+x];
+    for(let y=0;y<h;y++){const lo=y-r>0?y-r:0,hi=y+r<h-1?y+r:h-1;out[y*w+x]=acc/(hi-lo+1);const ny=y+r+1;if(ny<h)acc+=tmp[ny*w+x];const py=y-r;if(py>=0)acc-=tmp[py*w+x]}}}
+/* 彩色導向濾波：讓遮罩邊緣貼著原圖的真實邊緣（頭髮、衣服輪廓） */
+function guidedColor(I0,I1,I2,p,w,h,r,eps){
+  const N=w*h,tmp=new Float32Array(N),f=s=>{const o=new Float32Array(N);boxf(s,w,h,r,o,tmp);return o},
+    pr=(a,b)=>{const o=new Float32Array(N);for(let i=0;i<N;i++)o[i]=a[i]*b[i];return o};
+  const m0=f(I0),m1=f(I1),m2=f(I2),mp=f(p),c0=f(pr(I0,p)),c1=f(pr(I1,p)),c2=f(pr(I2,p)),
+    v00=f(pr(I0,I0)),v01=f(pr(I0,I1)),v02=f(pr(I0,I2)),v11=f(pr(I1,I1)),v12=f(pr(I1,I2)),v22=f(pr(I2,I2)),
+    a0=new Float32Array(N),a1=new Float32Array(N),a2=new Float32Array(N),b=new Float32Array(N);
+  for(let i=0;i<N;i++){
+    const s00=v00[i]-m0[i]*m0[i]+eps,s01=v01[i]-m0[i]*m1[i],s02=v02[i]-m0[i]*m2[i],s11=v11[i]-m1[i]*m1[i]+eps,s12=v12[i]-m1[i]*m2[i],s22=v22[i]-m2[i]*m2[i]+eps,
+      g0=c0[i]-m0[i]*mp[i],g1=c1[i]-m1[i]*mp[i],g2=c2[i]-m2[i]*mp[i],
+      i00=s11*s22-s12*s12,i01=s02*s12-s01*s22,i02=s01*s12-s02*s11,i11=s00*s22-s02*s02,i12=s01*s02-s00*s12,i22=s00*s11-s01*s01,
+      id=1/(s00*i00+s01*i01+s02*i02),
+      A0=(i00*g0+i01*g1+i02*g2)*id,A1=(i01*g0+i11*g1+i12*g2)*id,A2=(i02*g0+i12*g1+i22*g2)*id;
+    a0[i]=A0;a1[i]=A1;a2[i]=A2;b[i]=mp[i]-A0*m0[i]-A1*m1[i]-A2*m2[i]}
+  return {a0:f(a0),a1:f(a1),a2:f(a2),b:f(b)}}
+function refineAlpha(src,p,w,h){
+  const s=2,w2=Math.ceil(w/s),h2=Math.ceil(h/s),N2=w2*h2,I0=new Float32Array(N2),I1=new Float32Array(N2),I2=new Float32Array(N2),P=new Float32Array(N2);
+  for(let y=0;y<h2;y++)for(let x=0;x<w2;x++){let r=0,g=0,b=0,pp=0,n=0;
+    for(let dy=0;dy<s;dy++){const yy=y*s+dy;if(yy>=h)break;for(let dx=0;dx<s;dx++){const xx=x*s+dx;if(xx>=w)break;const i=yy*w+xx;r+=src[i*4];g+=src[i*4+1];b+=src[i*4+2];pp+=p[i];n++}}
+    const j=y*w2+x;I0[j]=r/n/255;I1[j]=g/n/255;I2[j]=b/n/255;let v=(pp/n-.5)*2.4+.5;P[j]=v<0?0:v>1?1:v}
+  let g=guidedColor(I0,I1,I2,P,w2,h2,Math.max(3,Math.round(Math.max(w2,h2)*.009)),1e-3);
+  const q1=new Float32Array(N2);for(let i=0;i<N2;i++){const v=g.a0[i]*I0[i]+g.a1[i]*I1[i]+g.a2[i]*I2[i]+g.b[i];q1[i]=v<0?0:v>1?1:v}
+  g=guidedColor(I0,I1,I2,q1,w2,h2,2,1e-4);
+  const A=new Float32Array(w*h),xa=new Int32Array(w),xb=new Int32Array(w),xw=new Float32Array(w);
+  for(let x=0;x<w;x++){let fx=(x+.5)/s-.5;if(fx<0)fx=0;let x0=Math.floor(fx);const x1=Math.min(w2-1,x0+1);x0=Math.min(w2-1,x0);xa[x]=x0;xb[x]=x1;xw[x]=Math.min(1,Math.max(0,fx-x0))}
+  for(let y=0;y<h;y++){let fy=(y+.5)/s-.5;if(fy<0)fy=0;let y0=Math.floor(fy);const y1=Math.min(h2-1,y0+1);y0=Math.min(h2-1,y0);const wy=Math.min(1,Math.max(0,fy-y0)),r0=y0*w2,r1=y1*w2;
+    for(let x=0;x<w;x++){const wx=xw[x],o00=r0+xa[x],o01=r0+xb[x],o10=r1+xa[x],o11=r1+xb[x],w00=(1-wy)*(1-wx),w01=(1-wy)*wx,w10=wy*(1-wx),w11=wy*wx,i=y*w+x,
+      R=src[i*4]/255,G=src[i*4+1]/255,B=src[i*4+2]/255,
+      a0=g.a0[o00]*w00+g.a0[o01]*w01+g.a0[o10]*w10+g.a0[o11]*w11,a1=g.a1[o00]*w00+g.a1[o01]*w01+g.a1[o10]*w10+g.a1[o11]*w11,
+      a2=g.a2[o00]*w00+g.a2[o01]*w01+g.a2[o10]*w10+g.a2[o11]*w11,bb=g.b[o00]*w00+g.b[o01]*w01+g.b[o10]*w10+g.b[o11]*w11,
+      v=a0*R+a1*G+a2*B+bb;A[i]=v<0?0:v>1?1:v}}
+  return A}
+/* 邊緣去色：把半透明邊緣像素混入的背景顏色換成附近的人物顏色（Blur-Fusion） */
+function fgColor(src,A,w,h,out){
+  const s=2,w2=Math.ceil(w/s),h2=Math.ceil(h/s),N2=w2*h2,mk=()=>new Float32Array(N2),al=mk(),fa=[mk(),mk(),mk()],ba=[mk(),mk(),mk()],tmp=mk(),rf=Math.max(4,Math.round(Math.max(w2,h2)*.03));
+  for(let y=0;y<h2;y++)for(let x=0;x<w2;x++){let n=0,sa=0;const sf=[0,0,0],sb=[0,0,0];
+    for(let dy=0;dy<s;dy++){const yy=y*s+dy;if(yy>=h)break;for(let dx=0;dx<s;dx++){const xx=x*s+dx;if(xx>=w)break;const i=yy*w+xx,a=A[i];sa+=a;for(let c=0;c<3;c++){const v=src[i*4+c]/255;sf[c]+=v*a;sb[c]+=v*(1-a)}n++}}
+    const j=y*w2+x;al[j]=sa/n;for(let c=0;c<3;c++){fa[c][j]=sf[c]/n;ba[c][j]=sb[c]/n}}
+  const flt=a=>{const o=mk();boxf(a,w2,h2,rf,o,tmp);return o},bal=flt(al),bF=[],bB=[];
+  for(let c=0;c<3;c++){const f1=flt(fa[c]),b1=flt(ba[c]);for(let j=0;j<N2;j++){f1[j]=f1[j]/(bal[j]+1e-5);b1[j]=b1[j]/(1-bal[j]+1e-5)}bF.push(f1);bB.push(b1)}
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=y*w+x,a=A[i],o=i*4;
+    if(a<.02||a>.98){out[o]=src[o];out[o+1]=src[o+1];out[o+2]=src[o+2];continue}
+    const j=(y>>1)*w2+(x>>1);
+    for(let c=0;c<3;c++){const I=src[o+c]/255,f=bF[c][j],b=bB[c][j];let v=f+a*(I-a*f-(1-a)*b);v=v<0?0:v>1?1:v;out[o+c]=v*255}}}
+/* 邊緣曲線與手動修飾 → 寫入透明度 */
+function cutCurve(v){const s=(v-50)/100*.6;CUT.lo=Math.max(0,.05+Math.max(0,s)*2);CUT.hi=Math.min(1,Math.max(CUT.lo+.08,.95+Math.min(0,s)*2))}
+function cutPaint(x0,y0,x1,y1){
+  const w=CUT.w,A=CUT.A,E=CUT.ED,d=CUT.id.data,lo=CUT.lo,k=1/(CUT.hi-lo);
+  for(let y=y0;y<y1;y++){let i=y*w+x0;for(let x=x0;x<x1;x++,i++){let v=(A[i]-lo)*k;v=v<0?0:v>1?1:v;v=v*v*(3-2*v);const e=E[i];if(e<0)v*=1+e/255;else if(e>0)v+=(1-v)*e/255;d[i*4+3]=v*255}}
+  CUT.cx.putImageData(CUT.id,0,0,x0,y0,x1-x0,y1-y0)}
 function swapPh(url){ph.onload=()=>{st.w=ph.naturalWidth;st.h=ph.naturalHeight;sizePh();draw();ph.onload=null};ph.src=url}
-function applyCut(){swapPh(buildCut().toDataURL('image/png'));$('cutSl').disabled=false;$('cutBack').disabled=false;pbVis()}
+function applyCut(){cutPaint(0,0,CUT.w,CUT.h);swapPh(CUT.cv.toDataURL('image/png'));$('cutSl').disabled=false;$('cutBack').disabled=false;$('cutEdit').disabled=false;pbVis()}
+const tick=()=>new Promise(r=>setTimeout(r,25));
 async function doCut(){
   if(!CUT.orig||!st.w){toast('請先選擇相片');return false}
   if(CUT.busy)return false;
@@ -332,28 +420,75 @@ async function doCut(){
   try{
     if(!_seg){b.textContent='載入模型…';toast('第一次使用需下載 AI 模型，請稍候',3500)}
     const seg=await getSeg();
-    b.textContent='去背中…';await new Promise(r=>setTimeout(r,30));
+    b.textContent='辨識人物…';await tick();
     const im=new Image();im.src=CUT.orig;await im.decode();
-    const k=Math.min(1,1024/Math.max(im.naturalWidth,im.naturalHeight)),w=Math.max(1,Math.round(im.naturalWidth*k)),h=Math.max(1,Math.round(im.naturalHeight*k));
-    const cv=document.createElement('canvas');cv.width=w;cv.height=h;const x=cv.getContext('2d',{willReadFrequently:true});x.drawImage(im,0,0,w,h);
-    const R=runSeg(seg,cv);if(!R)throw new Error('沒有辨識到結果');
-    let p=R.p;
-    if(R.w!==w||R.h!==h){/* 遮罩尺寸不同時縮放到相片大小 */
-      const mc=document.createElement('canvas');mc.width=R.w;mc.height=R.h;const mx=mc.getContext('2d'),mi=mx.createImageData(R.w,R.h);
-      for(let i=0,j=0;i<R.p.length;i++,j+=4){mi.data[j]=mi.data[j+1]=mi.data[j+2]=255;mi.data[j+3]=R.p[i]*255}
-      mx.putImageData(mi,0,0);const oc=document.createElement('canvas');oc.width=w;oc.height=h;const ox=oc.getContext('2d',{willReadFrequently:true});ox.imageSmoothingQuality='high';ox.drawImage(mc,0,0,w,h);
-      const od=ox.getImageData(0,0,w,h).data;p=new Float32Array(w*h);for(let i=0;i<p.length;i++)p[i]=od[i*4+3]/255}
-    CUT.w=w;CUT.h=h;CUT.p=p;CUT.src=x.getImageData(0,0,w,h).data;CUT.done=true;
+    const k=Math.min(1,1280/Math.max(im.naturalWidth,im.naturalHeight)),w=Math.max(1,Math.round(im.naturalWidth*k)),h=Math.max(1,Math.round(im.naturalHeight*k));
+    const oc=mkc(w,h),ox=oc.getContext('2d',{willReadFrequently:true});ox.drawImage(im,0,0,w,h);
+    const r1=segP(seg,oc);if(!r1)throw new Error('沒有辨識到結果');
+    b.textContent='精修人物…';await tick();
+    const p=refineCrop(seg,oc,r1.p,r1.inv);
+    b.textContent='修邊緣…';await tick();
+    const src=ox.getImageData(0,0,w,h).data,A=refineAlpha(src,p,w,h);
+    b.textContent='去除殘色…';await tick();
+    const cv=mkc(w,h),cx=cv.getContext('2d',{willReadFrequently:true}),id=cx.createImageData(w,h);
+    fgColor(src,A,w,h,id.data);
+    cutCurve($('cutSl').value);
+    Object.assign(CUT,{w,h,oc,A,cv,cx,id,ED:new Int16Array(w*h),done:true});
     applyCut();return true
   }catch(e){toast('去背失敗：'+((e&&e.message)||e)+'（第一次需要連網）',5000);return false}
   finally{CUT.busy=false;b.disabled=false;b.textContent=old}}
-function cutReset(orig){CUT.orig=orig;CUT.done=false;CUT.src=CUT.p=null;$('cutSl').disabled=true;$('cutBack').disabled=true;pbVis()}
+function cutReset(orig){Object.assign(CUT,{orig,done:false,A:null,ED:null,id:null,cv:null,cx:null,oc:null});$('cutSl').disabled=true;$('cutBack').disabled=true;$('cutEdit').disabled=true;pbVis()}
 function afterPhotoLoad(){if(pbSel)doCut().then(ok=>{if(ok)pbRender()})}
-$('cutBtn').onclick=async()=>{if(CUT.done){toast('已去背，可直接選背景');return}const ok=await doCut();if(ok){toast('去背完成，選一個背景吧');if(!pbSel)pbRender()}};
-$('cutBack').onclick=()=>{if(!CUT.orig)return;CUT.done=false;CUT.src=CUT.p=null;$('cutSl').disabled=true;$('cutBack').disabled=true;swapPh(CUT.orig);pbVis()};
+$('cutBtn').onclick=async()=>{if(CUT.done){toast('已去背，可直接選背景或按「細修」');return}const ok=await doCut();if(ok){toast('去背完成！邊緣不滿意可按「細修」');if(!pbSel)pbRender()}};
+$('cutBack').onclick=()=>{if(!CUT.orig)return;const o=CUT.orig;cutReset(o);swapPh(o)};
 let _slT=0;
-$('cutSl').oninput=e=>{CUT.t=.75-e.target.value/100*.5;if(_slT)return;_slT=setTimeout(()=>{_slT=0;if(CUT.done)applyCut()},90)};
-$('cutSl').onchange=()=>{if(CUT.done)applyCut()};
+$('cutSl').oninput=e=>{cutCurve(e.target.value);if(_slT)return;_slT=setTimeout(()=>{_slT=0;if(CUT.done)applyCut()},120)};
+$('cutSl').onchange=e=>{cutCurve(e.target.value);if(CUT.done)applyCut()};
+
+/* ---- 細修編輯器：擦除殘留背景／還原被切掉的部分 ---- */
+const ED={on:false,tool:'erase',vs:1,fit:1,vx:0,vy:0,d:1,bgi:0,pts:new Map(),drawing:false,last:null,pin:null,pl:null,undo:[],cur:null,size:28,raf:0,pat:null};
+function mkChecker(){const c=mkc(20,20),x=c.getContext('2d');x.fillStyle='#ececec';x.fillRect(0,0,20,20);x.fillStyle='#cdcdcd';x.fillRect(0,0,10,10);x.fillRect(10,10,10,10);return c}
+function edLayout(){const st=$('edStage'),cv=$('edCv');ED.d=Math.min(2,window.devicePixelRatio||1);cv.width=Math.round(st.clientWidth*ED.d);cv.height=Math.round(st.clientHeight*ED.d)}
+function edFit(){const st=$('edStage'),k=Math.min(st.clientWidth/CUT.w,st.clientHeight/CUT.h)*.97;ED.fit=ED.vs=k;ED.vx=(st.clientWidth-CUT.w*k)/2;ED.vy=(st.clientHeight-CUT.h*k)/2}
+function edDirty(){if(!ED.raf)ED.raf=requestAnimationFrame(edRender)}
+function edRender(){ED.raf=0;if(!ED.on||!CUT.cv)return;
+  const cv=$('edCv'),x=cv.getContext('2d'),d=ED.d,W=cv.width/d,H=cv.height/d;x.setTransform(d,0,0,d,0,0);
+  if(ED.bgi===0){x.fillStyle=ED.pat||(ED.pat=x.createPattern(mkChecker(),'repeat'))}else x.fillStyle=['','#00d26a','#ff5fa2','#262626'][ED.bgi];
+  x.fillRect(0,0,W,H);x.imageSmoothingEnabled=true;x.imageSmoothingQuality='high';
+  const dw=CUT.w*ED.vs,dh=CUT.h*ED.vs;
+  if(ED.tool==='keep'){x.globalAlpha=.32;x.drawImage(CUT.oc,ED.vx,ED.vy,dw,dh);x.globalAlpha=1}
+  x.drawImage(CUT.cv,ED.vx,ED.vy,dw,dh);
+  if(ED.cur&&ED.tool!=='pan'){const r=ED.size/2;x.lineWidth=1.5;x.strokeStyle='#fff';x.beginPath();x.arc(ED.cur.x,ED.cur.y,r,0,6.2832);x.stroke();x.lineWidth=1;x.strokeStyle='#000';x.beginPath();x.arc(ED.cur.x,ED.cur.y,r+1.5,0,6.2832);x.stroke()}}
+function edOpen(){if(!CUT.done)return;$('ed').classList.add('show');ED.on=true;edLayout();edFit();ED.undo=[];ED.cur=null;edDirty()}
+function edClose(){ED.on=false;$('ed').classList.remove('show');applyCut();toast('已套用細修')}
+function edPush(){ED.undo.push(CUT.ED.slice());if(ED.undo.length>8)ED.undo.shift()}
+function edUndo(){const u=ED.undo.pop();if(!u)return;CUT.ED.set(u);cutPaint(0,0,CUT.w,CUT.h);edDirty()}
+function edStamp(ix,iy){
+  const r=ED.size/2/ED.vs,R=Math.ceil(r+1),w=CUT.w,h=CUT.h,x0=Math.max(0,Math.floor(ix-R)),y0=Math.max(0,Math.floor(iy-R)),x1=Math.min(w,Math.ceil(ix+R)),y1=Math.min(h,Math.ceil(iy+R));
+  if(x1<=x0||y1<=y0)return;const E=CUT.ED,er=ED.tool==='erase';
+  for(let y=y0;y<y1;y++)for(let x=x0;x<x1;x++){const dd=Math.hypot(x+.5-ix,y+.5-iy);if(dd>r)continue;const sv=Math.round(255*Math.min(1,(1-dd/r)/.3)),i=y*w+x;
+    if(er){if(-sv<E[i])E[i]=-sv}else if(sv>E[i])E[i]=sv}
+  cutPaint(x0,y0,x1,y1)}
+(function(){const ec=$('edCv'),pos=e=>{const r=ec.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top}},toImg=p=>({x:(p.x-ED.vx)/ED.vs,y:(p.y-ED.vy)/ED.vs});
+  ec.addEventListener('pointerdown',e=>{e.preventDefault();try{ec.setPointerCapture(e.pointerId)}catch(_){}const p=pos(e);ED.pts.set(e.pointerId,p);ED.cur=p;
+    if(ED.pts.size===1){if(ED.tool!=='pan'){edPush();ED.drawing=true;ED.last=toImg(p);edStamp(ED.last.x,ED.last.y)}else ED.pl=p}
+    else if(ED.pts.size===2){ED.drawing=false;const [a,b]=[...ED.pts.values()];ED.pin={d:Math.hypot(a.x-b.x,a.y-b.y)||1,cx:(a.x+b.x)/2,cy:(a.y+b.y)/2,vs:ED.vs,vx:ED.vx,vy:ED.vy}}
+    edDirty()});
+  ec.addEventListener('pointermove',e=>{const p=pos(e);ED.cur=p;if(!ED.pts.has(e.pointerId)){edDirty();return}ED.pts.set(e.pointerId,p);
+    if(ED.pts.size>=2&&ED.pin){const [a,b]=[...ED.pts.values()],dd=Math.hypot(a.x-b.x,a.y-b.y)||1,cx=(a.x+b.x)/2,cy=(a.y+b.y)/2,P=ED.pin,nvs=Math.min(16,Math.max(ED.fit*.5,P.vs*dd/P.d)),ix=(P.cx-P.vx)/P.vs,iy=(P.cy-P.vy)/P.vs;ED.vs=nvs;ED.vx=cx-ix*nvs;ED.vy=cy-iy*nvs}
+    else if(ED.drawing){const q=toImg(p),L=ED.last,rad=ED.size/2/ED.vs,step=Math.max(1,rad*.3),n=Math.max(1,Math.ceil(Math.hypot(q.x-L.x,q.y-L.y)/step));for(let i=1;i<=n;i++)edStamp(L.x+(q.x-L.x)*i/n,L.y+(q.y-L.y)*i/n);ED.last=q}
+    else if(ED.tool==='pan'&&ED.pl){ED.vx+=p.x-ED.pl.x;ED.vy+=p.y-ED.pl.y;ED.pl=p}
+    edDirty()});
+  const up=e=>{ED.pts.delete(e.pointerId);if(ED.pts.size<2)ED.pin=null;if(!ED.pts.size){ED.drawing=false;ED.pl=null}else ED.pl=[...ED.pts.values()][0];edDirty()};
+  ec.addEventListener('pointerup',up);ec.addEventListener('pointercancel',up);
+  ec.addEventListener('wheel',e=>{e.preventDefault();const p=pos(e),k=e.deltaY<0?1.15:1/1.15,nvs=Math.min(16,Math.max(ED.fit*.5,ED.vs*k)),ix=(p.x-ED.vx)/ED.vs,iy=(p.y-ED.vy)/ED.vs;ED.vs=nvs;ED.vx=p.x-ix*nvs;ED.vy=p.y-iy*nvs;edDirty()},{passive:false});
+  const tools={edErase:'erase',edKeep:'keep',edPan:'pan'};
+  Object.keys(tools).forEach(id=>$(id).onclick=()=>{ED.tool=tools[id];Object.keys(tools).forEach(k=>$(k).classList.toggle('on',k===id));edDirty()});
+  $('edSize').oninput=e=>{ED.size=+e.target.value;edDirty()};
+  $('edBg').onclick=()=>{ED.bgi=(ED.bgi+1)%4;edDirty()};
+  $('edFit').onclick=()=>{edFit();edDirty()};
+  $('edUndo').onclick=edUndo;$('edDone').onclick=edClose;$('cutEdit').onclick=edOpen;
+  addEventListener('resize',()=>{if(ED.on){edLayout();edFit();edDirty()}})})();
 
 /* ---- 背景圖層 ---- */
 function pbVis(){$('pbLayer').style.visibility=(st.w&&CUT.done&&pbSel)?'visible':'hidden'}
