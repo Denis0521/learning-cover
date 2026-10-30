@@ -48,6 +48,17 @@ border-radius:28px;box-shadow:0 0 0 6px #ff9f1c,0 0 0 12px #ffd166,0 8px 10px rg
 #photoBg{position:absolute;inset:0;z-index:0;background:linear-gradient(180deg,#bfe9ff,#fff7c2 55%,#ffd6e7);background-size:cover;background-position:center}
 #ph{z-index:1}
 #photoTools{display:grid;gap:7px}
+
+.photo-bg-cats{display:flex;gap:6px;overflow-x:auto;padding:3px 1px 7px;scrollbar-width:thin}
+.photo-bg-cats button{flex:0 0 auto;padding:7px 11px;font-size:12px;background:#f3e6d4;color:#654a31;box-shadow:none;text-shadow:none;border-radius:13px}
+.photo-bg-cats button.on{background:linear-gradient(180deg,#ffd166,#ff9f1c);color:#fff;box-shadow:0 2px 0 #c76f00}
+#photoBgs{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+#photoBgs button{width:100%;height:76px;min-width:0;padding:0 3px 5px;display:flex;align-items:flex-end;justify-content:center;border:2px solid #fff;border-radius:12px;box-shadow:0 1px 5px rgba(0,0,0,.2);font-size:11px;font-weight:700;color:#fff;text-shadow:0 1px 3px #000,0 1px 6px #000;background-size:cover!important;background-position:center!important;position:relative}
+#photoBgs button:after{content:"";position:absolute;inset:0;border-radius:9px;background:linear-gradient(180deg,transparent 35%,rgba(0,0,0,.58));pointer-events:none}
+#photoBgs button span{position:relative;z-index:1}
+#photoBgs button.sel{outline:3px solid #ff9f1c;outline-offset:1px}
+@media(max-width:520px){#photoBgs{grid-template-columns:repeat(3,minmax(0,1fr))}}
+
 /* 相片模式：只放大顯示相框，讓手機上更容易調整 */
 body.photo-focus #stage{background:radial-gradient(ellipse at center,#fff8e8,#ead9bd)}
 body.photo-focus #wrap{overflow:hidden;border-radius:18px;box-shadow:0 10px 28px rgba(0,0,0,.22)}
@@ -139,6 +150,16 @@ input[type=range]::-moz-range-thumb{width:30px;height:30px;border-radius:50%;bac
 .txt:focus{border-color:#ff9f1c}
 #fshape button{background:var(--bg);color:var(--tx);border:2px solid var(--bd);box-shadow:0 3px 0 var(--bd);text-shadow:none;font-weight:400;padding:7px 14px;font-size:15px}
 #fshape button.sel{background:linear-gradient(180deg,#ffe29a,#ffc247);border-color:#ff9f1c;box-shadow:0 3px 0 #c76f00,inset 0 2px 0 rgba(255,255,255,.6)}
+
+/* 幼兒園寫實背景縮圖與分類 */
+.photo-bg-cats{display:flex;gap:6px;overflow-x:auto;padding:3px 1px 7px;scrollbar-width:thin}
+.photo-bg-cats button{flex:0 0 auto;padding:7px 11px;font-size:12px;background:#f3e6d4;color:#654a31;box-shadow:none;text-shadow:none;border-radius:13px}
+.photo-bg-cats button.on{background:linear-gradient(180deg,#ffd166,#ff9f1c);color:#fff;box-shadow:0 2px 0 #c76f00}
+#photoBgs{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+#photoBgs button{width:100%;height:76px;min-width:0;padding:0 3px 5px;display:flex;align-items:flex-end;justify-content:center;border:2px solid #fff;border-radius:12px;box-shadow:0 1px 5px rgba(0,0,0,.2);font-size:11px;font-weight:700;color:#fff;text-shadow:0 1px 3px #000,0 1px 6px #000;background-size:cover!important;background-position:center!important;position:relative}
+#photoBgs button:after{content:"";position:absolute;inset:0;border-radius:9px;background:linear-gradient(180deg,transparent 35%,rgba(0,0,0,.58));pointer-events:none}
+#photoBgs button span{position:relative;z-index:1}
+#photoBgs button.sel{outline:3px solid #ff9f1c;outline-offset:1px}
 </style></head><body>
 <div id="stage"><div id="wrap"><div id="page">
 <img id="bgimg" alt="">
@@ -159,7 +180,7 @@ input[type=range]::-moz-range-thumb{width:30px;height:30px;border-radius:50%;bac
 <div class="photo-subpane on" id="photoPreview"><div class="photo-note">預覽區只顯示相框，可直接拖曳照片；雙指或滑輪可縮放。</div><div class="btns"><button id="pickPh">選擇相片</button><button class="gr" id="camPh">📸 拍照</button><button class="alt" id="clrPh">移除</button></div></div>
 <div class="photo-subpane" id="photoAdjust"><div class="btns" id="fshape"><span>相框比例</span><button class="sel" data-s="sq">⬜ 方形</button><button data-s="wide">▭ 16:9</button><button data-s="tall">▯ 直式 4:3</button></div><div class="btns">縮放<input type="range" id="zoom" min="50" max="400" value="100"></div><div class="btns mv"><span>移動照片</span><button class="gr" data-d="-1,0">◀</button><button class="gr" data-d="0,-1">▲</button><button class="gr" data-d="0,1">▼</button><button class="gr" data-d="1,0">▶</button><button class="alt" id="rst">重置</button></div></div>
 <div class="photo-subpane" id="photoCutout"><div class="btns"><button id="removeBg" class="gr">✂️ 一鍵去背</button><button id="restorePhoto" class="alt">還原原圖</button></div><div id="bgStatus" class="photo-note">上傳後可去背及更換相片背景</div><div class="photo-note">首次使用去背需下載模型，請保持網路連線。</div></div>
-<div class="photo-subpane" id="photoBackground"><div class="btns"><span class="tooltitle">寫實照片背景</span><button type="button" class="alt" id="pickPhotoBg">＋自訂背景</button></div><div id="photoBgs"></div><div class="btns"><span class="tooltitle">光影效果</span><button type="button" data-light="none" class="sel">原始</button><button type="button" data-light="soft">柔和光</button><button type="button" data-light="back">逆光</button><button type="button" data-light="warm">暖陽</button><button type="button" data-light="shade">柔陰影</button></div><div class="photo-note">建議先完成去背，再套用背景與光影；背景照片首次載入需網路。</div></div>
+<div class="photo-subpane" id="photoBackground"><div class="btns"><span class="tooltitle">幼兒園實景背景</span><button type="button" class="alt" id="pickPhotoBg">＋自訂背景</button></div><div id="photoBgCats" class="photo-bg-cats"><button type="button" class="on" data-bg-cat="all">全部</button><button type="button" data-bg-cat="wall">教室牆面</button><button type="button" data-bg-cat="holiday">節慶佈置</button><button type="button" data-bg-cat="play">遊戲區</button><button type="button" data-bg-cat="reading">圖書閱讀</button></div><div id="photoBgs"></div><div class="btns"><span class="tooltitle">光影效果</span><button type="button" data-light="none" class="sel">原始</button><button type="button" data-light="soft">柔和光</button><button type="button" data-light="back">窗邊逆光</button><button type="button" data-light="warm">暖陽</button><button type="button" data-light="shade">柔陰影</button></div><div class="photo-note">建議先完成去背，再套用背景與光影。背景照片需連線載入；也可上傳幼兒園自己的教室照片。部分照片素材來自 Pexels。</div></div>
 </div>
 <div class="pane" id="p2"><div class="btns"><span>文字</span><input class="txt" id="tTxt" maxlength="12" value="我的學習檔案" placeholder="輸入標題"></div><div class="btns" id="fonts"></div></div>
 <div class="pane" id="p3"><div class="btns"><span>文字</span><input class="txt" id="sTxt" maxlength="14" value="遠東幼兒園" placeholder="輸入副標題（校名）"></div><div class="btns" id="fonts2"></div></div>
@@ -255,17 +276,31 @@ const photoBg=$('photoBg');
 $('pickPhotoBg').onclick=()=>$('photoBgIn').click();
 $('photoBgIn').onchange=e=>{const f=e.target.files[0];if(!f)return;loadFile(f,u=>{photoBg.style.backgroundImage=`url(\"${u}\")`;photoBg.style.backgroundSize='cover';photoBg.style.backgroundPosition='center';$('photoBgs').querySelectorAll('button').forEach(x=>x.classList.remove('sel'));$('bgStatus').textContent='已套用自訂相片背景';});e.target.value=''};
 const PHOTO_BACKGROUNDS=[
- ['森林晨光','url(https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1200&auto=format&fit=crop&q=85)'],
- ['山景草原','url(https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=1200&auto=format&fit=crop&q=85)'],
- ['海邊晴空','url(https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&auto=format&fit=crop&q=85)'],
- ['海岸浪花','url(https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=1200&auto=format&fit=crop&q=85)'],
- ['花園綠意','url(https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?w=1200&auto=format&fit=crop&q=85)'],
- ['日式庭院','url(https://images.unsplash.com/photo-1497250681960-ef046c08a56e?w=1200&auto=format&fit=crop&q=85)'],
- ['溫馨客廳','url(https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=1200&auto=format&fit=crop&q=85)'],
- ['明亮居家','url(https://images.unsplash.com/photo-1600585154340-be6161a56c0a?w=1200&auto=format&fit=crop&q=85)'],
- ['明亮教室','url(https://images.unsplash.com/photo-1509062522246-3755977927d7?w=1200&auto=format&fit=crop&q=85)']
+ {name:'陽光教室牆面',cat:'wall',url:'https://images.pexels.com/photos/8535634/pexels-photo-8535634.jpeg?cs=srgb&dl=pexels-kseniachernaya-8535634.jpg&fm=jpg',pos:'center'},
+ {name:'孩子作品展示牆',cat:'wall',url:'https://images.pexels.com/photos/8499538/pexels-photo-8499538.jpeg?cs=srgb&dl=pexels-rdne-8499538.jpg&fm=jpg',pos:'center'},
+ {name:'節慶派對佈置',cat:'holiday',url:'https://images.pexels.com/photos/8535633/pexels-photo-8535633.jpeg?cs=srgb&dl=pexels-kseniachernaya-8535633.jpg&fm=jpg',pos:'center'},
+ {name:'溫馨遊戲區',cat:'play',url:'https://images.pexels.com/photos/9951401/pexels-photo-9951401.jpeg?cs=srgb&dl=pexels-bakytzhan-baurzhanov-854600-9951401.jpg&fm=jpg',pos:'center'},
+ {name:'幼兒活動教室',cat:'play',url:'https://images.pexels.com/photos/8535156/pexels-photo-8535156.jpeg?cs=srgb&dl=pexels-kseniachernaya-8535156.jpg&fm=jpg',pos:'center'},
+ {name:'繪本閱讀角',cat:'reading',url:'https://images.pexels.com/photos/30254122/pexels-photo-30254122.jpeg?cs=srgb&dl=pexels-santiago-manuel-de-la-colina-520897-30254122.jpg&fm=jpg',pos:'center'},
 ];
-PHOTO_BACKGROUNDS.forEach(([name,bg],i)=>{const b=document.createElement('button');b.type='button';b.title=name;b.textContent=name;b.style.backgroundImage=bg;b.onclick=()=>{photoBg.style.backgroundImage=bg;photoBg.style.backgroundSize='cover';photoBg.style.backgroundPosition='center';$('photoBgs').querySelectorAll('button').forEach(x=>x.classList.toggle('sel',x===b));$('bgStatus').textContent='已套用寫實背景：'+name};$('photoBgs').appendChild(b)});
+function applyPhotoBg(item,button){
+ const bg=`url("${item.url}")`;
+ photoBg.style.backgroundImage=bg;photoBg.style.backgroundSize='cover';photoBg.style.backgroundPosition=item.pos||'center';
+ $('photoBgs').querySelectorAll('button').forEach(x=>x.classList.toggle('sel',x===button));
+ $('bgStatus').textContent='已套用幼兒園背景：'+item.name;
+}
+function renderPhotoBgs(cat='all'){
+ const box=$('photoBgs');box.innerHTML='';
+ PHOTO_BACKGROUNDS.filter(x=>cat==='all'||x.cat===cat).forEach(item=>{
+  const b=document.createElement('button');b.type='button';b.title=item.name;b.style.backgroundImage=`url("${item.url}")`;
+  const label=document.createElement('span');label.textContent=item.name;b.appendChild(label);
+  b.onclick=()=>applyPhotoBg(item,b);box.appendChild(b);
+ });
+}
+document.querySelectorAll('[data-bg-cat]').forEach(b=>b.onclick=()=>{
+ document.querySelectorAll('[data-bg-cat]').forEach(x=>x.classList.toggle('on',x===b));renderPhotoBgs(b.dataset.bgCat);
+});
+renderPhotoBgs();
 const LIGHTS={none:'transparent',soft:'linear-gradient(135deg,rgba(255,255,255,.36),rgba(255,255,255,.05) 55%,rgba(255,255,255,.18))',back:'radial-gradient(ellipse at 78% 12%,rgba(255,255,220,.85),rgba(255,244,190,.28) 28%,transparent 62%)',warm:'linear-gradient(135deg,rgba(255,205,130,.42),transparent 60%)',shade:'linear-gradient(180deg,rgba(0,0,0,.05),transparent 38%,rgba(0,0,0,.3))'};
 document.querySelectorAll('[data-light]').forEach(b=>b.onclick=()=>{photoBg.style.setProperty('--photo-light',LIGHTS[b.dataset.light]);document.querySelectorAll('[data-light]').forEach(x=>x.classList.toggle('sel',x===b))});
 $('restorePhoto').onclick=()=>{if(originalPhotoData){showPhoto(originalPhotoData);$('bgStatus').textContent='已還原調整大小後的原始相片'}else $('bgStatus').textContent='請先選擇相片'};
