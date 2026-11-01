@@ -487,6 +487,34 @@ $('pbPick').onclick=()=>$('pbIn').click();
 $('pbIn').onchange=e=>loadFile(e.target.files[0],u=>shrinkImg(u,1400,v=>{useBg({k:'img',v},null);e.target.value=''}));
 
 /* 去背功能（拍照牆）背景：7 組實景背景牆（名稱依實際圖片內容對應） */
+/* 三款幼兒園佈景牆：以內嵌 SVG 製作，無需另外上傳圖片檔 */
+function wallSvg(kind){
+  const common=`<rect width="800" height="800" fill="${kind==='rainbow'?'#fff0d8':kind==='garden'?'#e9f7df':'#dff5fb'}"/>
+  <rect x="28" y="28" width="744" height="744" rx="34" fill="${kind==='rainbow'?'#f8d7e8':kind==='garden'?'#d5edc5':'#c5eaf5'}" stroke="#fff" stroke-width="16"/>
+  <rect x="65" y="65" width="670" height="670" rx="24" fill="${kind==='rainbow'?'#fff8e9':kind==='garden'?'#f7ffe9':'#effcff'}" stroke="${kind==='rainbow'?'#f6b7cf':kind==='garden'?'#9bce88':'#8dcddd'}" stroke-width="10"/>`;
+  let deco='';
+  if(kind==='rainbow') deco=`
+    <path d="M210 300a190 190 0 0 1 380 0" fill="none" stroke="#ff8c8c" stroke-width="38" stroke-linecap="round"/>
+    <path d="M245 300a155 155 0 0 1 310 0" fill="none" stroke="#ffc65c" stroke-width="34"/>
+    <path d="M280 300a120 120 0 0 1 240 0" fill="none" stroke="#82cfae" stroke-width="32"/>
+    <path d="M315 300a85 85 0 0 1 170 0" fill="none" stroke="#83b9f5" stroke-width="30"/>
+    <g fill="#fff"><path d="M95 205q0-35 38-35 25-42 65-8 42-4 44 43 30 30-5 52H118q-45-14-23-52z"/><path d="M555 170q0-32 34-32 25-38 60-7 39-3 42 39 28 28-5 48H575q-40-13-20-48z"/></g>
+    <g fill="#ffd166"><circle cx="150" cy="520" r="18"/><circle cx="650" cy="535" r="15"/><path d="M115 610l12-28 12 28 28 12-28 12-12 28-12-28-28-12z"/></g>`;
+  if(kind==='garden') deco=`
+    <g stroke="#68ad70" stroke-width="12" stroke-linecap="round" fill="none"><path d="M145 690q10-95 0-170"/><path d="M655 690q-10-95 0-170"/><path d="M145 610q-70-55-90-5 55 45 90 5z"/><path d="M655 610q70-55 90-5-55 45-90 5z"/></g>
+    <g fill="#ff9fbd"><circle cx="145" cy="420" r="27"/><circle cx="112" cy="450" r="27"/><circle cx="178" cy="450" r="27"/><circle cx="145" cy="480" r="27"/><circle cx="145" cy="450" r="19" fill="#ffd166"/>
+    <circle cx="655" cy="420" r="27"/><circle cx="622" cy="450" r="27"/><circle cx="688" cy="450" r="27"/><circle cx="655" cy="480" r="27"/><circle cx="655" cy="450" r="19" fill="#ffd166"/></g>
+    <g fill="#9acb78"><path d="M250 160q30-55 60 0-30 55-60 0z"/><path d="M490 160q30-55 60 0-30 55-60 0z"/></g>
+    <g fill="#ffcf70"><circle cx="270" cy="650" r="14"/><circle cx="530" cy="650" r="14"/></g>`;
+  if(kind==='ocean') deco=`
+    <path d="M70 570q80-50 160 0t160 0 160 0 180 0v160H70z" fill="#b6e5ef"/>
+    <g fill="#79c7dc"><path d="M130 270q-55-55-85 0 30 55 85 0z"/><path d="M670 300q55-55 85 0-30 55-85 0z"/></g>
+    <g fill="#ffbd69"><ellipse cx="145" cy="330" rx="36" ry="24"/><path d="M178 330l38-28v56z"/><circle cx="132" cy="324" r="4" fill="#3b6470"/>
+    <ellipse cx="650" cy="370" rx="34" ry="23"/><path d="M620 370l-35-27v54z"/><circle cx="660" cy="364" r="4" fill="#3b6470"/></g>
+    <g fill="none" stroke="#77c7d9" stroke-width="10"><path d="M280 130q-20 30 0 55t0 55"/><path d="M520 520q-20 30 0 55t0 55"/></g>
+    <g fill="#ffd166"><circle cx="230" cy="420" r="12"/><circle cx="570" cy="250" r="13"/><circle cx="340" cy="680" r="10"/></g>`;
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800">${common}${deco}</svg>`)}`;
+}
 const PB_PHOTOS=[
   ['w','聖誕節','bg1-art.jpg'],
   ['w','農曆春節','bg2-animal.jpg'],
@@ -494,7 +522,10 @@ const PB_PHOTOS=[
   ['w','中秋節','bg4-cny.jpg'],
   ['w','生日派對','bg5-hal.jpg'],
   ['w','作品牆','bg6-moon.jpg'],
-  ['w','動物牆','bg7-party.jpg']
+  ['w','動物牆','bg7-party.jpg'],
+  ['w','彩虹雲朵牆',wallSvg('rainbow')],
+  ['w','花園小花牆',wallSvg('garden')],
+  ['w','海洋世界牆',wallSvg('ocean')]
 ];
 function pbThumbs(cat){
   const box=$('pbThumbs');box.innerHTML='';pbCat=cat;
