@@ -230,10 +230,10 @@ $('pickBg').onclick=()=>$('bgIn').click();
 function selBg(el){document.querySelectorAll('#bgs .bgt').forEach(x=>x.classList.toggle('sel',x===el))}
 $('bgIn').onchange=e=>loadFile(e.target.files[0],u=>{bi.src=u;bi.style.display='block';decos.forEach(d=>d.style.display='none');selBg(null);e.target.value=''});
 
-/* 改為直接讀取全新的 7 組實景背景牆 */
-const BGS=['bg1-art','bg2-animal','bg3-xmas','bg4-cny','bg5-hal','bg6-moon','bg7-party'];
-const BGN=['作品牆','動物牆','聖誕節','農曆春節','萬聖節','中秋節','生日派對'];
-BGS.forEach((n,i)=>{const b=document.createElement('button');b.className='bgt';b.title=BGN[i];b.style.backgroundImage=`url(${n}.jpg)`;
+/* 兒童插畫底圖（9 組）：縮圖用 -thumb.jpg，套用用原圖 */
+const BGS=['bg1-playground','bg2-outdoor','bg3-toys','bg4-space','bg5-train','bg6-sports','bg7-music','bg8-jobs','bg10-dance'];
+const BGN=['遊樂場','戶外探索','玩具','太空','小火車','運動會','音樂','職業體驗','舞蹈'];
+BGS.forEach((n,i)=>{const b=document.createElement('button');b.className='bgt';b.title=BGN[i];b.style.backgroundImage=`url(${n}-thumb.jpg)`;
 b.onclick=()=>{bi.src=`${n}.jpg`;bi.style.display='block';decos.forEach(d=>d.style.display='none');selBg(b)};$('bgs').appendChild(b)});
 
 function clearBg(g){selBg(null);bi.style.display='none';bi.removeAttribute('src');decos.forEach(d=>d.style.display='');page.style.background=g||''}
@@ -486,20 +486,22 @@ function shrinkImg(url,max,cb){const im=new Image();im.onload=()=>{const k=Math.
 $('pbPick').onclick=()=>$('pbIn').click();
 $('pbIn').onchange=e=>loadFile(e.target.files[0],u=>shrinkImg(u,1400,v=>{useBg({k:'img',v},null);e.target.value=''}));
 
-/* 替換為全新的 7 組實景背景牆清單 */
+/* 兒童插畫底圖清單（9 組） */
 const PB_PHOTOS=[
-  ['w','作品牆','bg1-art.jpg'],
-  ['w','動物牆','bg2-animal.jpg'],
-  ['w','聖誕節','bg3-xmas.jpg'],
-  ['w','農曆春節','bg4-cny.jpg'],
-  ['w','萬聖節','bg5-hal.jpg'],
-  ['w','中秋節','bg6-moon.jpg'],
-  ['w','生日派對','bg7-party.jpg']
+  ['w','遊樂場','bg1-playground.jpg'],
+  ['w','戶外探索','bg2-outdoor.jpg'],
+  ['w','玩具','bg3-toys.jpg'],
+  ['w','太空','bg4-space.jpg'],
+  ['w','小火車','bg5-train.jpg'],
+  ['w','運動會','bg6-sports.jpg'],
+  ['w','音樂','bg7-music.jpg'],
+  ['w','職業體驗','bg8-jobs.jpg'],
+  ['w','舞蹈','bg10-dance.jpg']
 ];
 function pbThumbs(cat){
   const box=$('pbThumbs');box.innerHTML='';pbCat=cat;
   const add=(name,bg,spec)=>{const b=document.createElement('button');b.className='pbt';b.title=name;b.style.background=bg;b.innerHTML='<i>'+name+'</i>';b.onclick=()=>useBg(spec,b);if(pbSel&&pbSel.id===spec.id)b.classList.add('sel');box.appendChild(b)};
-  PB_PHOTOS.filter(p=>p[0]===cat).forEach(p=>add(p[1],'center/cover url("'+p[2]+'")',{k:'img',v:p[2],id:'p:'+p[2]}))
+  PB_PHOTOS.filter(p=>p[0]===cat).forEach(p=>add(p[1],'center/cover url("'+p[2].replace('.jpg','-thumb.jpg')+'")',{k:'img',v:p[2],id:'p:'+p[2]}))
 }
 document.querySelectorAll('#bgCats button[data-c]').forEach(b=>b.onclick=()=>{document.querySelectorAll('#bgCats button[data-c]').forEach(x=>x.classList.toggle('sel',x===b));pbThumbs(b.dataset.c)});
 pbThumbs('w');
