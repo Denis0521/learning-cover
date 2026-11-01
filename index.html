@@ -231,8 +231,8 @@ function selBg(el){document.querySelectorAll('#bgs .bgt').forEach(x=>x.classList
 $('bgIn').onchange=e=>loadFile(e.target.files[0],u=>{bi.src=u;bi.style.display='block';decos.forEach(d=>d.style.display='none');selBg(null);e.target.value=''});
 
 /* 兒童插畫底圖（9 組）：縮圖用 -thumb.jpg，套用用原圖 */
-const BGS=['bg1-playground','bg2-outdoor','bg3-toys','bg4-space','bg5-train','bg6-sports','bg7-music','bg8-jobs','bg10-dance'];
-const BGN=['遊樂場','戶外探索','玩具','太空','小火車','運動會','音樂','職業體驗','舞蹈'];
+const BGS=['bg1-playground','bg2-outdoor','bg3-toys','bg4-space','bg5-train','bg6-sports','bg7-music','bg8-jobs','bg9-origami','bg10-dance'];
+const BGN=['遊樂場','戶外探索','玩具','太空','小火車','運動會','音樂','職業體驗','摺紙','舞蹈'];
 BGS.forEach((n,i)=>{const b=document.createElement('button');b.className='bgt';b.title=BGN[i];b.style.backgroundImage=`url(${n}-thumb.jpg)`;
 b.onclick=()=>{bi.src=`${n}.jpg`;bi.style.display='block';decos.forEach(d=>d.style.display='none');selBg(b)};$('bgs').appendChild(b)});
 
@@ -496,6 +496,7 @@ const PB_PHOTOS=[
   ['w','運動會','bg6-sports.jpg'],
   ['w','音樂','bg7-music.jpg'],
   ['w','職業體驗','bg8-jobs.jpg'],
+  ['w','摺紙','bg9-origami.jpg'],
   ['w','舞蹈','bg10-dance.jpg']
 ];
 function pbThumbs(cat){
