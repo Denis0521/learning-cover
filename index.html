@@ -486,23 +486,20 @@ function shrinkImg(url,max,cb){const im=new Image();im.onload=()=>{const k=Math.
 $('pbPick').onclick=()=>$('pbIn').click();
 $('pbIn').onchange=e=>loadFile(e.target.files[0],u=>shrinkImg(u,1400,v=>{useBg({k:'img',v},null);e.target.value=''}));
 
-/* 兒童插畫底圖清單（9 組） */
+/* 去背功能（拍照牆）背景：7 組實景背景牆（名稱依實際圖片內容對應） */
 const PB_PHOTOS=[
-  ['w','遊樂場','bg1-playground.jpg'],
-  ['w','戶外探索','bg2-outdoor.jpg'],
-  ['w','玩具','bg3-toys.jpg'],
-  ['w','太空','bg4-space.jpg'],
-  ['w','小火車','bg5-train.jpg'],
-  ['w','運動會','bg6-sports.jpg'],
-  ['w','音樂','bg7-music.jpg'],
-  ['w','職業體驗','bg8-jobs.jpg'],
-  ['w','摺紙','bg9-origami.jpg'],
-  ['w','舞蹈','bg10-dance.jpg']
+  ['w','聖誕節','bg1-art.jpg'],
+  ['w','農曆春節','bg2-animal.jpg'],
+  ['w','萬聖節','bg3-xmas.jpg'],
+  ['w','中秋節','bg4-cny.jpg'],
+  ['w','生日派對','bg5-hal.jpg'],
+  ['w','作品牆','bg6-moon.jpg'],
+  ['w','動物牆','bg7-party.jpg']
 ];
 function pbThumbs(cat){
   const box=$('pbThumbs');box.innerHTML='';pbCat=cat;
   const add=(name,bg,spec)=>{const b=document.createElement('button');b.className='pbt';b.title=name;b.style.background=bg;b.innerHTML='<i>'+name+'</i>';b.onclick=()=>useBg(spec,b);if(pbSel&&pbSel.id===spec.id)b.classList.add('sel');box.appendChild(b)};
-  PB_PHOTOS.filter(p=>p[0]===cat).forEach(p=>add(p[1],'center/cover url("'+p[2].replace('.jpg','-thumb.jpg')+'")',{k:'img',v:p[2],id:'p:'+p[2]}))
+  PB_PHOTOS.filter(p=>p[0]===cat).forEach(p=>add(p[1],'center/cover url("'+p[2]+'")',{k:'img',v:p[2],id:'p:'+p[2]}))
 }
 document.querySelectorAll('#bgCats button[data-c]').forEach(b=>b.onclick=()=>{document.querySelectorAll('#bgCats button[data-c]').forEach(x=>x.classList.toggle('sel',x===b));pbThumbs(b.dataset.c)});
 pbThumbs('w');
